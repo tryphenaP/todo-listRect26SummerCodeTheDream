@@ -3,27 +3,32 @@ import TodoForm from './TodoForm.jsx';
 import './App.css'
 import { useState } from "react";
 
-const todos = [
-    {id: 1, title: "review resources"},
-    {id: 2, title: "take notes"},
-    {id: 3, title: "code out app"},
-]
+
 function App() {
   const [todoList, setTodoList] = useState([]);
    function addTodo(todoTitle) {
     const newTodo = {
       id: Date.now(),
-      title: todoTitle
+      title: todoTitle,
+      isCompleted: false
     };
     setTodoList(previous => [newTodo, ...previous]);
   
    }
-
+function completeTodo(todoId) {
+  setTodoList(previous => previous.map(todo => {
+    if (todo.id === todoId) {
+      return { ...todo,  isCompleted: true};
+    }
+    return todo;
+  }));
+} 
   return (
     <div>
       <h1>Todo List</h1>
       
-          <TodoList todoList={todoList}/>
+          <TodoList todoList={todoList}
+          onCompleteTodo={completeTodo}/>
           <TodoForm onAddTodo={addTodo} />
 
      
