@@ -6,7 +6,7 @@ import {  useEffect, useState } from "react";
 
 function TodosPage({ token }) {
   const [todoList, setTodoList] = useState([]);
-  const [fetchError, setFetchError] = useState('');
+  const [error, setError] = useState('');
   const [isTodoListLoading, setIsTodoListLoading] = useState(false);
 
   useEffect(() => {
@@ -14,7 +14,7 @@ function TodosPage({ token }) {
     setIsTodoListLoading(true);
 
     try {
-      const response = await fetch('/api/tasks', {
+      const response = await fetch('/api/tasks?limit=100', {
         method: 'GET',
         headers: {
           'X-CSRF-TOKEN': token,
@@ -35,7 +35,7 @@ function TodosPage({ token }) {
       setTodoList(data.tasks);
 
     } catch (error) {
-      setFetchError(`Error: ${error.name} | ${error.message}`);
+      setError(`Error: ${error.name} | ${error.message}`);
     } finally {
       setIsTodoListLoading(false);
     }
@@ -85,7 +85,7 @@ function TodosPage({ token }) {
     );
 
     
-    setFetchError(error.message);
+    setError(error.message);
   }   
   
    }
@@ -95,12 +95,16 @@ function TodosPage({ token }) {
     const originalTodo = todoList.find(
     (todo) => todo.id === todoId
   );
-  setTodoList(previous => previous.map(todo => {
-    if (todo.id === todoId) {
-      return { ...todo,  isCompleted: true};
-    }
-    return todo;
-  }));
+  if (!originalTodo) return;
+
+  setTodoList((previous) =>
+    previous.map((todo) =>
+      todo.id === todoId
+        ? { ...todo, isCompleted: true }
+        : todo
+    )
+  );
+
 
 try {
     const response = await fetch(`/api/tasks/${todoId}`, {
@@ -112,7 +116,7 @@ try {
       credentials: 'include',
       body: JSON.stringify({
         isCompleted: true,
-        createdAt: originalTodo.createdAt,
+        
       }),
     });
 
@@ -133,7 +137,7 @@ setTodoList((previous) =>
     );
 
     // Set error message
-    setFetchError(error.message);
+    setError(error.message);
   }
   
 } 
@@ -146,15 +150,15 @@ async function updateTodo(editedTodo) {
     (todo) => todo.id === editedTodo.id
   );
 
-const updatedTodos = todoList.map(todo => {
-    if (todo.id === editedTodo.id) {
-      return {
-        ...editedTodo,
-      };
-    }
-    return todo;
-  });
-  setTodoList(updatedTodos);
+if (!originalTodo) return;
+
+  setTodoList((previous) =>
+    previous.map((todo) =>
+      todo.id === editedTodo.id
+        ? { ...todo, title: editedTodo.title }
+        : todo
+    )
+  );
 
   try {
     // 3. PATCH request to API
@@ -167,8 +171,7 @@ const updatedTodos = todoList.map(todo => {
       credentials: 'include',
       body: JSON.stringify({
         title: editedTodo.title,
-        isCompleted: editedTodo.isCompleted,
-        createdAt: editedTodo.createdAt,
+        
       }),
     });
 
@@ -178,17 +181,16 @@ const updatedTodos = todoList.map(todo => {
 } catch (error) {
 
     // 4. Rollback to original todo on failure
-    const rolledBack = todoList.map((todo) => {
-      if (todo.id === originalTodo.id) {
-        return originalTodo;
-      }
-      return todo;
-    });
-
-    setTodoList(rolledBack);
+    setTodoList((previous) =>
+  previous.map((todo) =>
+    todo.id === originalTodo.id
+      ? originalTodo
+      : todo
+  )
+);
 
     // 5. Set error message
-    setFetchError(error.message);
+    setError(error.message);
   }
 } 
 
@@ -200,20 +202,21 @@ const updatedTodos = todoList.map(todo => {
       {isTodoListLoading && (
       <p>Loading todos...</p>
     )}
-      {fetchError && (
+      {error && (
       <div style={{ color: "red", marginBottom: "10px" }}>
-        <p>{fetchError}</p>
+        <p>{error}</p>
 
-        <button onClick={() => setFetchError('')}>
+        <button onClick={() => setError('')}>
           Clear Error
         </button>
       </div>
     )}
+          <TodoForm onAddTodo={addTodo} />
           <TodoList todoList={todoList}
           onCompleteTodo={completeTodo}
           onUpdateTodo={updateTodo}
           />
-          <TodoForm onAddTodo={addTodo} />
+          
 
      
     </div>
