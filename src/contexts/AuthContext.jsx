@@ -1,58 +1,84 @@
-import { createContext, useContext, useState } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+} from 'react';
 
 // Create the context
-const AuthContext = createContext();
+const AuthContext = createContext(null);
 
 // Custom hook with error checking
 export function useAuth() {
   const context = useContext(AuthContext);
+
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error(
+      'useAuth must be used within an AuthProvider'
+    );
   }
+
   return context;
 }
 
 export function AuthProvider({ children }) {
-  // State for authentication
   const [email, setEmail] = useState('');
   const [token, setToken] = useState('');
-  
+
+  // LOGIN
   const login = async (userEmail, password) => {
-  try {
-    const options = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: userEmail, password }),
-      credentials: 'include',
-    };
-    
-    const res = await fetch('/api/users/logon', options);
-    const data = await res.json();
-    
-    if (res.status === 200 && data.name && data.csrfToken) {
-      // Success: Update state
-      setEmail(data.name);
-      setToken(data.csrfToken);
-      return { success: true };
-    } else {
-      // Failure: Return error
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          email: userEmail,
+          password,
+        }),
+      };
+
+      const response = await fetch(
+        '/api/users/logon',
+        options
+      );
+
+      const data = await response.json();
+
+      if (
+        response.status === 200 &&
+        data.name &&
+        data.csrfToken
+      ) {
+        setEmail(data.name);
+        setToken(data.csrfToken);
+
+        return {
+          success: true,
+        };
+      }
+
       return {
         success: false,
-        error: `Authentication failed: ${data?.message}`,
+        error:
+          data?.message ||
+          'Authentication failed',
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: 'Network error during login',
       };
     }
-  } catch (error) {
-    return {
-      success: false,
-      error: 'Network error during login',
-    };
-  }
-};
+  };
 
-
-// LOGOUT
+  // LOGOUT
   const logout = async () => {
-    // No token? Just clear state
+    /*
+     * If there is no token, the user is already
+     * logged out. Clear local state and report success.
+     */
     if (!token) {
       setEmail('');
       setToken('');
@@ -63,49 +89,73 @@ export function AuthProvider({ children }) {
     }
 
     try {
-      const options = {
-        method: 'POST',
-        headers: {
-          'X-CSRF-TOKEN': token,
-        },
-        credentials: 'include',
-      };
-
-      await fetch(
+      const response = await fetch(
         '/api/users/logoff',
-        options
+        {
+          method: 'POST',
+          headers: {
+            'X-CSRF-TOKEN': token,
+          },
+          credentials: 'include',
+        }
       );
+
+      /*
+       * Treat non-2xx responses as logout failures.
+       */
+      if (!response.ok) {
+        let errorMessage =
+          'Logout failed';
+
+        try {
+          const data = await response.json();
+
+          errorMessage =
+            data?.message ||
+            errorMessage;
+        } catch {
+          // Response was not JSON.
+        }
+
+        return {
+          success: false,
+          error: errorMessage,
+        };
+      }
+
+      return {
+        success: true,
+      };
     } catch (error) {
-      console.error(
-        'Logout request failed:',
-        error
-        );
+      /*
+       * Network or fetch failure.
+       */
+      return {
+        success: false,
+        error: 'Network error during logout',
+      };
     } finally {
-      // Always clear local auth state
+      /*
+       * Always clear local authentication state,
+       * even if the API logout request fails.
+       */
       setEmail('');
       setToken('');
     }
-
-    return {
-      success: true,
-    };
   };
 
-
-      
-  
-  // Context value object
   const value = {
     email,
     token,
-    isAuthenticated: !!token,
+    isAuthenticated: Boolean(token),
     login,
     logout,
   };
-  
+
   return (
     <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
 }
+

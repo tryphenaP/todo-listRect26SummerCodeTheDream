@@ -21,7 +21,7 @@ export const TODO_ACTIONS = {
   CLEAR_ERROR: 'CLEAR_ERROR',
   CLEAR_FILTER_ERROR: 'CLEAR_FILTER_ERROR',
 
-  RESET_FILTER: 'RESET_FILTER',
+  RESET_FILTERS: 'RESET_FILTERS',
 
   INCREMENT_DATA_VERSION: 'INCREMENT_DATA_VERSION',
 };
@@ -31,8 +31,8 @@ export const initialTodoState = {
   error: '',
   filterError: '',
   isTodoListLoading: true,
-  sortBy: 'creationDate',
-  sortDirection: 'desc',
+  sortBy: 'createdAt',
+  sortDirection: 'asc',
   filterTerm: '',
   dataVersion: 0,
 };
@@ -50,10 +50,13 @@ export function todoReducer(state, action) {
     case TODO_ACTIONS.FETCH_SUCCESS:
       return {
         ...state,
-    todoList: (action.payload || []).filter(
-      (todo) => todo && typeof todo === "object" && todo.id
-    ),
-    isTodoListLoading: false,
+        todoList: (action.payload || []).filter(
+          (todo) =>
+            todo &&
+            typeof todo === 'object' &&
+            todo.id
+        ),
+        isTodoListLoading: false,
       };
 
     case TODO_ACTIONS.FETCH_ERROR:
@@ -61,12 +64,11 @@ export function todoReducer(state, action) {
         ...state,
         isTodoListLoading: false,
         error: action.payload?.isFilterError
-      ? ''
-      : action.payload?.message,
-
-    filterError: action.payload?.isFilterError
-      ? action.payload?.message
-      : '',
+          ? ''
+          : action.payload?.message || 'Failed to fetch todos',
+        filterError: action.payload?.isFilterError
+          ? action.payload?.message || 'Failed to filter todos'
+          : '',
       };
 
     case TODO_ACTIONS.CLEAR_ERROR:
@@ -85,6 +87,7 @@ export function todoReducer(state, action) {
       return {
         ...state,
         filterTerm: action.payload,
+        filterError: '',
       };
 
     case TODO_ACTIONS.SET_SORT:
@@ -94,10 +97,12 @@ export function todoReducer(state, action) {
         sortDirection: action.payload.sortDirection,
       };
 
-    case TODO_ACTIONS.RESET_FILTER:
+    case TODO_ACTIONS.RESET_FILTERS:
       return {
         ...state,
         filterTerm: '',
+        sortBy: 'createdAt',
+        sortDirection: 'asc',
       };
 
     case TODO_ACTIONS.INCREMENT_DATA_VERSION:
@@ -106,50 +111,56 @@ export function todoReducer(state, action) {
         dataVersion: state.dataVersion + 1,
       };
 
-    // ADD TODO
-
     case TODO_ACTIONS.ADD_TODO_START:
       return {
         ...state,
-    todoList: [
-      ...state.todoList.filter(Boolean),
-      {
-        id: action.payload.id ,
-        title: action.payload.title ,
-        isCompleted: false,
-        isTemp: true,
-      },
-    ],
+        todoList: [
+          ...state.todoList.filter(Boolean),
+          {
+            id: action.payload.id,
+            title: action.payload.title,
+            isCompleted: false,
+            isTemp: true,
+          },
+        ],
       };
 
     case TODO_ACTIONS.ADD_TODO_SUCCESS:
       return {
         ...state,
-        todoList: state.todoList.filter(Boolean).map((todo) =>
-          todo?.id === action.payload.tempId
-            ? action.payload.task
-            : todo
-        ),
+        todoList: state.todoList
+          .filter(Boolean)
+          .map((todo) =>
+            todo?.id === action.payload.tempId
+              ? action.payload.task
+              : todo
+          ),
       };
 
     case TODO_ACTIONS.ADD_TODO_ERROR:
       return {
         ...state,
-        error: action.payload,
-        todoList: state.todoList.filter(
-      (todo) => todo?.id !== action.payload.id),
+        error: action.payload.message,
+        todoList: state.todoList
+          .filter(Boolean)
+          .filter(
+            (todo) => todo?.id !== action.payload.id
+          ),
       };
-
-    // COMPLETE TODO
 
     case TODO_ACTIONS.COMPLETE_TODO_START:
       return {
         ...state,
-        todoList: state.todoList.filter(Boolean).map((todo) =>
-          todo?.id === action.payload.id
-            ? { ...todo, isCompleted: true }
-            : todo
-        ),
+        todoList: state.todoList
+          .filter(Boolean)
+          .map((todo) =>
+            todo?.id === action.payload.id
+              ? {
+                  ...todo,
+                  isCompleted: true,
+                }
+              : todo
+          ),
       };
 
     case TODO_ACTIONS.COMPLETE_TODO_SUCCESS:
@@ -158,45 +169,54 @@ export function todoReducer(state, action) {
     case TODO_ACTIONS.COMPLETE_TODO_ERROR:
       return {
         ...state,
-        todoList: state.todoList.filter(Boolean).map((todo) =>
-          todo?.id === action.payload.id
-            ? action.payload
-            : todo
-        ),
+        error: action.payload.message,
+        todoList: state.todoList
+          .filter(Boolean)
+          .map((todo) =>
+            todo?.id === action.payload.todo.id
+              ? action.payload.todo
+              : todo
+          ),
       };
-
-    // UPDATE TODO
 
     case TODO_ACTIONS.UPDATE_TODO_START:
       return {
         ...state,
-        todoList: state.todoList.filter(Boolean).map((todo) =>
-          todo?.id === action.payload.id
-            ? action.payload
-            : todo
-        ),
+        todoList: state.todoList
+          .filter(Boolean)
+          .map((todo) =>
+            todo?.id === action.payload.id
+              ? {
+                  ...todo,
+                  title: action.payload.title,
+                }
+              : todo
+          ),
       };
 
     case TODO_ACTIONS.UPDATE_TODO_SUCCESS:
-        if (!action.payload?.id) return state;
-
       return {
         ...state,
-        todoList: state.todoList.filter(Boolean).map((todo) =>
-          todo?.id === action.payload.id
-            ? action.payload
-            : todo
-        ),
+        todoList: state.todoList
+          .filter(Boolean)
+          .map((todo) =>
+            todo?.id === action.payload.id
+              ? action.payload
+              : todo
+          ),
       };
 
     case TODO_ACTIONS.UPDATE_TODO_ERROR:
       return {
         ...state,
-        todoList: state.todoList.filter(Boolean).map((todo) =>
-          todo?.id === action.payload.id
-            ? action.payload
-            : todo
-        ),
+        error: action.payload.message,
+        todoList: state.todoList
+          .filter(Boolean)
+          .map((todo) =>
+            todo?.id === action.payload.todo.id
+              ? action.payload.todo
+              : todo
+          ),
       };
 
     default:
