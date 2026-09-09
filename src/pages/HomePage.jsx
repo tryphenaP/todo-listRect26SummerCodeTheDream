@@ -1,6 +1,6 @@
 import {useEffect} from 'react';
 import { useAuth } from '../contexts/auth.js';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 function HomePage() {
   const { isAuthenticated } = useAuth();

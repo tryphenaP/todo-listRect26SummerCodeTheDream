@@ -5,7 +5,7 @@ import FilterInput from '/src/shared/FilterInput.jsx';
 import useDebounce from '/src/utils/useDebounce.js';
 import '/src/App.css';
 import { useAuth } from '/src/contexts/auth.js';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router';
 import StatusFilter from '../shared/StatusFilter';
 
 import { useEffect, useReducer, useCallback } from 'react';
@@ -18,7 +18,8 @@ import {
 
 function TodosPage() {
   const { token } = useAuth();
-   const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] =  useSearchParams();
+
   const [state, dispatch] = useReducer(
     todoReducer,
     initialTodoState

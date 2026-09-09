@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/auth.js';
 function ProfilePage() {
   const { email, token } = useAuth();
 
+  
   const [todoStats, setTodoStats] = useState({
     total: 0,
     completed: 0,
