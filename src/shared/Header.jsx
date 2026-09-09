@@ -1,4 +1,5 @@
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/auth.js';
+import Navigation from './Navigation';
 
 function Header() {
     const { isAuthenticated , logout } = useAuth();
@@ -6,8 +7,9 @@ function Header() {
   return (
     <header>
       <h1>Todo List</h1>
+      <Navigation />
       {isAuthenticated && (
-       
+
         <button onClick={logout}>
           Logout
         </button>
