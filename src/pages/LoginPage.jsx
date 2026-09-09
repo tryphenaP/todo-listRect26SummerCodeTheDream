@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router';
-import { useAuth } from '../contexts/auth.js';
+import { useAuth } from '../contexts/AuthContext';
 
 function LoginPage() {
   const { login, isAuthenticated } = useAuth();
@@ -14,7 +14,7 @@ function LoginPage() {
 
   // Get the page the user originally wanted to visit.
   // If there is no saved destination, go to /todos.
-  const from = location.state?.from?.pathname || '/todos';
+  const from = location.state?.from || '/todos';
 
   // Redirect after authentication succeeds.
   useEffect(() => {

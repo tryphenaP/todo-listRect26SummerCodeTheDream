@@ -1,30 +1,29 @@
 import { useEffect, useReducer, useCallback } from 'react';
 import { useSearchParams } from 'react-router';
 
-import TodoList from './TodoList/TodoList.jsx';
-import TodoForm from './TodoForm.jsx';
+import TodoList from '../features/Todos/TodoList/TodoList.jsx';
+import TodoForm from '../features/Todos/TodoForm.jsx';
 
-import SortBy from '../../shared/SortBy.jsx';
-import FilterInput from '../../shared/FilterInput.jsx';
-import StatusFilter from '../../shared/StatusFilter.jsx';
+import SortBy from '../shared/SortBy.jsx';
+import FilterInput from '../shared/FilterInput.jsx';
+import StatusFilter from '../shared/StatusFilter.jsx';
 
-import useDebounce from '../../utils/useDebounce.js';
-import { useAuth } from '../../contexts/auth.js';
+import useDebounce from '../utils/useDebounce.js';
+import { useAuth } from '../contexts/AuthContext';
 
 import {
   todoReducer,
   initialTodoState,
   TODO_ACTIONS,
-} from '../../reducers/todoReducer.js';
+} from '../reducers/todoReducer.js';
 
-import '../../App.css';
+import '../App.css';
 
 function TodosPage() {
   const { token } = useAuth();
 
   // Status filter is stored in the URL.
-  const [searchParams, setSearchParams] =
-    useSearchParams();
+  const [searchParams] = useSearchParams();
 
   const statusFilter =
     searchParams.get('status') || 'all';
@@ -47,29 +46,6 @@ function TodosPage() {
 
   const debouncedFilterTerm =
     useDebounce(filterTerm, 300);
-
-  /*
-   * Changing the status filter updates the URL.
-   *
-   * /todos
-   * /todos?status=active
-   * /todos?status=completed
-   */
-  const handleStatusFilterChange = (newStatus) => {
-    setSearchParams((currentParams) => {
-      const params = new URLSearchParams(
-        currentParams
-      );
-
-      if (newStatus === 'all') {
-        params.delete('status');
-      } else {
-        params.set('status', newStatus);
-      }
-
-      return params;
-    });
-  };
 
   /*
    * Changing dataVersion causes the fetch effect
@@ -432,12 +408,7 @@ function TodosPage() {
         }
       />
 
-      <StatusFilter
-        statusFilter={statusFilter}
-        onStatusFilterChange={
-          handleStatusFilterChange
-        }
-      />
+      <StatusFilter />
 
       <FilterInput
         filterTerm={filterTerm}

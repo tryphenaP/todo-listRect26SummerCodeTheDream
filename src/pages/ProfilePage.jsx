@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useAuth } from '../contexts/auth.js';
+import { useAuth } from '../contexts/AuthContext';
 
 function ProfilePage() {
   const { name, token } = useAuth();

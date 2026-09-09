@@ -1,5 +1,5 @@
 import {useEffect} from 'react';
-import { useAuth } from '../contexts/auth.js';
+import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router';
 
 function HomePage() {

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { useAuth } from '../contexts/auth.js';
+import { useAuth } from '../contexts/AuthContext';
 
 function Logoff() {
   const { logout } = useAuth();

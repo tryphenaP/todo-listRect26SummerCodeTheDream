@@ -135,6 +135,7 @@ export function AuthProvider({ children }) {
     name,
     token,
     isAuthenticated: Boolean(token),
+    loading: false,
     login,
     logout,
   };
