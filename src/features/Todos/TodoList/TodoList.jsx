@@ -4,12 +4,12 @@ import { useMemo } from 'react';
 
 
 function TodoList({todoList, onCompleteTodo, onUpdateTodo,dataVersion}) {
-const filteredTodoList = useMemo(() => {
+  const filteredTodoList = useMemo(() => {
   return {
-      version: dataVersion,
-      todos: todoList.filter((todo) => !todo.isCompleted),
+      
+      todos: (todoList || []).filter((todo) => todo && !todo.isCompleted),
     };
-  }, [todoList, dataVersion]);
+  }, [todoList]);
 
   return (
    filteredTodoList.todos.length === 0 ? (
