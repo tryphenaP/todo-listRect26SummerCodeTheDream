@@ -1,30 +1,38 @@
-import TodoList from '/src/features/Todos/TodoList/TodoList.jsx';
-import TodoForm from '/src/features/Todos/TodoForm.jsx';
-import SortBy from '/src/shared/SortBy.jsx';
-import FilterInput from '/src/shared/FilterInput.jsx';
-import useDebounce from '/src/utils/useDebounce.js';
-import '/src/App.css';
-import { useAuth } from '/src/contexts/auth.js';
-import { useSearchParams } from 'react-router';
-import StatusFilter from '../shared/StatusFilter';
-
 import { useEffect, useReducer, useCallback } from 'react';
+import { useSearchParams } from 'react-router';
+
+import TodoList from './TodoList/TodoList.jsx';
+import TodoForm from './TodoForm.jsx';
+
+import SortBy from '../../shared/SortBy.jsx';
+import FilterInput from '../../shared/FilterInput.jsx';
+import StatusFilter from '../../shared/StatusFilter.jsx';
+
+import useDebounce from '../../utils/useDebounce.js';
+import { useAuth } from '../../contexts/auth.js';
 
 import {
   todoReducer,
   initialTodoState,
   TODO_ACTIONS,
-} from '/src/reducers/todoReducer.js';
+} from '../../reducers/todoReducer.js';
+
+import '../../App.css';
 
 function TodosPage() {
   const { token } = useAuth();
-  const [searchParams, setSearchParams] =  useSearchParams();
+
+  // Status filter is stored in the URL.
+  const [searchParams, setSearchParams] =
+    useSearchParams();
+
+  const statusFilter =
+    searchParams.get('status') || 'all';
 
   const [state, dispatch] = useReducer(
     todoReducer,
     initialTodoState
   );
-const statusFilter = searchParams.get('status') || 'all';  
 
   const {
     todoList,
@@ -37,8 +45,36 @@ const statusFilter = searchParams.get('status') || 'all';
     dataVersion,
   } = state;
 
-  const debouncedFilterTerm = useDebounce(filterTerm, 300);
+  const debouncedFilterTerm =
+    useDebounce(filterTerm, 300);
 
+  /*
+   * Changing the status filter updates the URL.
+   *
+   * /todos
+   * /todos?status=active
+   * /todos?status=completed
+   */
+  const handleStatusFilterChange = (newStatus) => {
+    setSearchParams((currentParams) => {
+      const params = new URLSearchParams(
+        currentParams
+      );
+
+      if (newStatus === 'all') {
+        params.delete('status');
+      } else {
+        params.set('status', newStatus);
+      }
+
+      return params;
+    });
+  };
+
+  /*
+   * Changing dataVersion causes the fetch effect
+   * to run again and get the latest data.
+   */
   const invalidateCache = useCallback(() => {
     dispatch({
       type: TODO_ACTIONS.INCREMENT_DATA_VERSION,
@@ -52,26 +88,38 @@ const statusFilter = searchParams.get('status') || 'all';
     });
   };
 
+  /*
+   * Fetch todos whenever authentication,
+   * sorting, searching, or dataVersion changes.
+   */
   useEffect(() => {
     async function fetchTodos() {
+      if (!token) {
+        return;
+      }
+
       dispatch({
         type: TODO_ACTIONS.FETCH_START,
       });
 
       try {
         const paramsObject = {
+          limit: '100',
           sortBy,
           sortDirection,
         };
 
-        if (debouncedFilterTerm) {
-          paramsObject.find = debouncedFilterTerm;
+        if (debouncedFilterTerm.trim()) {
+          paramsObject.find =
+            debouncedFilterTerm.trim();
         }
 
-        const params = new URLSearchParams(paramsObject);
+        const params = new URLSearchParams(
+          paramsObject
+        );
 
         const response = await fetch(
-          `/api/tasks?${params}`,
+          `/api/tasks?${params.toString()}`,
           {
             method: 'GET',
             headers: {
@@ -97,9 +145,10 @@ const statusFilter = searchParams.get('status') || 'all';
         dispatch({
           type: TODO_ACTIONS.FETCH_ERROR,
           payload: {
-    message: `Error fetching todos: ${error.message}`,
-    isFilterError: false,
-  },
+            message: `Error fetching todos: ${error.message}`,
+            isFilterError:
+              Boolean(debouncedFilterTerm.trim()),
+          },
         });
       }
     }
@@ -110,8 +159,12 @@ const statusFilter = searchParams.get('status') || 'all';
     sortBy,
     sortDirection,
     debouncedFilterTerm,
+    dataVersion,
   ]);
 
+  /*
+   * ADD TODO
+   */
   async function addTodo(todoTitle) {
     const newTodo = {
       id: Date.now(),
@@ -119,27 +172,28 @@ const statusFilter = searchParams.get('status') || 'all';
       isCompleted: false,
     };
 
+    // Optimistically add the todo.
     dispatch({
       type: TODO_ACTIONS.ADD_TODO_START,
       payload: newTodo,
     });
 
-    invalidateCache();
-
     try {
-      const response = await fetch('/api/tasks', {
-        method: 'POST',
-        headers: {
-          'Content-Type':
-            'application/json',
-          'X-CSRF-TOKEN': token,
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          title: todoTitle,
-          isCompleted: false,
-        }),
-      });
+      const response = await fetch(
+        '/api/tasks',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': token,
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            title: todoTitle,
+            isCompleted: false,
+          }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error(
@@ -157,26 +211,38 @@ const statusFilter = searchParams.get('status') || 'all';
         },
       });
 
+      // Refresh data after successful mutation.
       invalidateCache();
     } catch (error) {
       dispatch({
         type: TODO_ACTIONS.ADD_TODO_ERROR,
-        payload: error.message,
+        payload: {
+          message: error.message,
+          id: newTodo.id,
+        },
       });
     }
   }
 
+  /*
+   * COMPLETE TODO
+   */
   async function completeTodo(todoId) {
     const originalTodo = todoList.find(
       (todo) => todo?.id === todoId
     );
 
+    if (!originalTodo) {
+      return;
+    }
+
+    // Optimistically mark as completed.
     dispatch({
       type: TODO_ACTIONS.COMPLETE_TODO_START,
-      payload: originalTodo,
+      payload: {
+        id: todoId,
+      },
     });
-
-    invalidateCache();
 
     try {
       const response = await fetch(
@@ -184,14 +250,12 @@ const statusFilter = searchParams.get('status') || 'all';
         {
           method: 'PATCH',
           headers: {
-            'Content-Type':
-              'application/json',
+            'Content-Type': 'application/json',
             'X-CSRF-TOKEN': token,
           },
           credentials: 'include',
           body: JSON.stringify({
             isCompleted: true,
-            
           }),
         }
       );
@@ -206,34 +270,39 @@ const statusFilter = searchParams.get('status') || 'all';
         type: TODO_ACTIONS.COMPLETE_TODO_SUCCESS,
         payload: todoId,
       });
+
+      // Refresh after successful update.
+      invalidateCache();
     } catch (error) {
+      // Restore original todo if request fails.
       dispatch({
         type: TODO_ACTIONS.COMPLETE_TODO_ERROR,
-        payload: originalTodo,
-      });
-
-      dispatch({
-        type: TODO_ACTIONS.FETCH_ERROR,
         payload: {
-    message: `Error fetching todos: ${error.message}`,
-    isFilterError: false,
-  },
+          message: error.message,
+          todo: originalTodo,
+        },
       });
     }
   }
 
+  /*
+   * UPDATE TODO
+   */
   async function updateTodo(editedTodo) {
     const originalTodo = todoList.find(
       (todo) =>
         todo?.id === editedTodo.id
     );
 
+    if (!originalTodo) {
+      return;
+    }
+
+    // Optimistically update the todo.
     dispatch({
       type: TODO_ACTIONS.UPDATE_TODO_START,
       payload: editedTodo,
     });
-
-    invalidateCache();
 
     try {
       const response = await fetch(
@@ -241,8 +310,7 @@ const statusFilter = searchParams.get('status') || 'all';
         {
           method: 'PATCH',
           headers: {
-            'Content-Type':
-              'application/json',
+            'Content-Type': 'application/json',
             'X-CSRF-TOKEN': token,
           },
           credentials: 'include',
@@ -250,7 +318,6 @@ const statusFilter = searchParams.get('status') || 'all';
             title: editedTodo.title,
             isCompleted:
               editedTodo.isCompleted,
-            
           }),
         }
       );
@@ -260,23 +327,24 @@ const statusFilter = searchParams.get('status') || 'all';
           'Failed to update todo'
         );
       }
-     const data = await response.json();
+
+      const data = await response.json();
+
       dispatch({
         type: TODO_ACTIONS.UPDATE_TODO_SUCCESS,
         payload: data.task,
       });
+
+      // Refresh after successful update.
+      invalidateCache();
     } catch (error) {
+      // Restore original todo if request fails.
       dispatch({
         type: TODO_ACTIONS.UPDATE_TODO_ERROR,
-        payload: originalTodo,
-      });
-
-      dispatch({
-        type: TODO_ACTIONS.FETCH_ERROR,
         payload: {
-    message: `Error fetching todos: ${error.message}`,
-    isFilterError: false,
-  },
+          message: error.message,
+          todo: originalTodo,
+        },
       });
     }
   }
@@ -296,7 +364,12 @@ const statusFilter = searchParams.get('status') || 'all';
             marginBottom: '10px',
           }}
         >
-<p>{typeof error === "string" ? error : error?.message}</p>
+          <p>
+            {typeof error === 'string'
+              ? error
+              : error?.message}
+          </p>
+
           <button
             onClick={() =>
               dispatch({
@@ -317,7 +390,11 @@ const statusFilter = searchParams.get('status') || 'all';
             marginBottom: '10px',
           }}
         >
-          <p>{filterError}</p>
+          <p>
+            {typeof filterError === 'string'
+              ? filterError
+              : filterError?.message}
+          </p>
 
           <button
             onClick={() =>
@@ -337,20 +414,16 @@ const statusFilter = searchParams.get('status') || 'all';
         sortDirection={sortDirection}
         onSortByChange={(value) =>
           dispatch({
-            type:
-              TODO_ACTIONS.SET_SORT,
+            type: TODO_ACTIONS.SET_SORT,
             payload: {
               sortBy: value,
               sortDirection,
             },
           })
         }
-        onSortDirectionChange={(
-          value
-        ) =>
+        onSortDirectionChange={(value) =>
           dispatch({
-            type:
-              TODO_ACTIONS.SET_SORT,
+            type: TODO_ACTIONS.SET_SORT,
             payload: {
               sortBy,
               sortDirection: value,
@@ -358,23 +431,27 @@ const statusFilter = searchParams.get('status') || 'all';
           })
         }
       />
-      <StatusFilter /> 
+
+      <StatusFilter
+        statusFilter={statusFilter}
+        onStatusFilterChange={
+          handleStatusFilterChange
+        }
+      />
 
       <FilterInput
         filterTerm={filterTerm}
-        onFilterChange={
-          handleFilterChange
-        }
+        onFilterChange={handleFilterChange}
       />
 
       <TodoForm onAddTodo={addTodo} />
 
       <TodoList
         todoList={todoList}
+        statusFilter={statusFilter}
         dataVersion={dataVersion}
         onCompleteTodo={completeTodo}
         onUpdateTodo={updateTodo}
-        statusFilter={statusFilter}
       />
     </div>
   );
