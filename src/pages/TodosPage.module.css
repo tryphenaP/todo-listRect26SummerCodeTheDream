@@ -1,0 +1,61 @@
+.todosPage {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.title {
+  margin-top: 0;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: white;
+}
+
+.error {
+  margin-bottom: 16px;
+  padding: 12px;
+  border: 1px solid #d32f2f;
+  border-radius: 6px;
+  color: #d32f2f;
+  background: #fff;
+}
+
+.filterError {
+  margin-bottom: 16px;
+  padding: 12px;
+  border: 1px solid #e6a700;
+  border-radius: 6px;
+  color: #b36b00;
+  background: #fff;
+}
+
+.errorMessage {
+  margin: 0 0 10px;
+}
+
+.errorButton {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+}
+
+.errorButton:hover {
+  background-color: #f5f5f5;
+}
+
+.loading {
+  margin-bottom: 16px;
+  text-align: center;
+}

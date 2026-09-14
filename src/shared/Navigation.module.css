@@ -1,0 +1,25 @@
+.navigation {
+  flex: 1;
+}
+
+.linkList {
+  display: flex;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.link {
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.active {
+  font-weight: bold;
+  text-decoration: underline;
+}

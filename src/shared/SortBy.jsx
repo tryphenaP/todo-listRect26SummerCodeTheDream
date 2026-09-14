@@ -1,3 +1,5 @@
+import styles from './SortBy.module.css';
+
 function SortBy({
   sortBy,
   sortDirection,
@@ -5,28 +7,56 @@ function SortBy({
   onSortDirectionChange,
 }) {
   return (
-    <div>
-      <div>
-        <label htmlFor="sort-by">Sort by</label>
+    <div className={styles.sortBy}>
+      <div className={styles.sortOption}>
+        <label
+          className={styles.label}
+          htmlFor="sort-by"
+        >
+          Sort by
+        </label>
+
         <select
+          className={styles.select}
           id="sort-by"
           value={sortBy}
-          onChange={(e) => onSortByChange(e.target.value)}
+          onChange={(e) =>
+            onSortByChange(e.target.value)
+          }
         >
-          <option value="createdAt">Creation Date</option>
-          <option value="title">Title</option>
+          <option value="createdAt">
+            Creation Date
+          </option>
+
+          <option value="title">
+            Title
+          </option>
         </select>
       </div>
 
-      <div>
-        <label htmlFor="sort-direction">Order</label>
+      <div className={styles.sortOption}>
+        <label
+          className={styles.label}
+          htmlFor="sort-direction"
+        >
+          Order
+        </label>
+
         <select
+          className={styles.select}
           id="sort-direction"
           value={sortDirection}
-          onChange={(e) => onSortDirectionChange(e.target.value)}
+          onChange={(e) =>
+            onSortDirectionChange(e.target.value)
+          }
         >
-          <option value="desc">Descending</option>
-          <option value="asc">Ascending</option>
+          <option value="desc">
+            Descending
+          </option>
+
+          <option value="asc">
+            Ascending
+          </option>
         </select>
       </div>
     </div>

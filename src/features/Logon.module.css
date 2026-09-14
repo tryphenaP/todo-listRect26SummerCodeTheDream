@@ -1,0 +1,56 @@
+.logonForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 350px;
+  margin: 40px auto;
+  padding: 24px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: white;
+  box-sizing: border-box;
+}
+
+.label {
+  font-weight: 600;
+}
+
+.input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #888;
+}
+
+.logonButton {
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+}
+
+.logonButton:hover:not(:disabled) {
+  background-color: #f5f5f5;
+}
+
+.logonButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error {
+  margin: 0;
+  color: #d32f2f;
+  font-size: 14px;
+}

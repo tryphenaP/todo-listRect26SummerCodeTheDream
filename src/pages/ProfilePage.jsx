@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import styles from './ProfilePage.module.css';
 
 function ProfilePage() {
   const { name, token } = useAuth();
@@ -42,7 +43,6 @@ function ProfilePage() {
 
         const data = await response.json();
 
-        // API returns the todos inside data.tasks.
         const todos = Array.isArray(data.tasks)
           ? data.tasks
           : Array.isArray(data)
@@ -82,18 +82,20 @@ function ProfilePage() {
       : 0;
 
   return (
-    <main>
-      <h1>Profile</h1>
+    <main className={styles.profilePage}>
+      <h1 className={styles.title}>Profile</h1>
 
-      <section>
-        <h2>User Information</h2>
+      <section className={styles.section}>
+        <h2 className={styles.heading}>
+          User Information
+        </h2>
 
-        <p>
+        <p className={styles.info}>
           <strong>Name:</strong>{' '}
           {name || 'Unknown'}
         </p>
 
-        <p>
+        <p className={styles.info}>
           <strong>Status:</strong>{' '}
           {token
             ? 'Authenticated'
@@ -101,22 +103,26 @@ function ProfilePage() {
         </p>
       </section>
 
-      <section>
-        <h2>Todo Statistics</h2>
+      <section className={styles.section}>
+        <h2 className={styles.heading}>
+          Todo Statistics
+        </h2>
 
         {loading && (
-          <p>Loading statistics...</p>
+          <p className={styles.loading}>
+            Loading statistics...
+          </p>
         )}
 
         {error && (
-          <p style={{ color: 'red' }}>
+          <p className={styles.error}>
             {error}
           </p>
         )}
 
         {!loading && !error && (
           <>
-            <ul>
+            <ul className={styles.statsList}>
               <li>
                 Total Todos: {todoStats.total}
               </li>
@@ -131,7 +137,7 @@ function ProfilePage() {
               </li>
             </ul>
 
-            <p>
+            <p className={styles.completionRate}>
               <strong>Completion Rate:</strong>{' '}
               {completionRate}%
             </p>

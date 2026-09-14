@@ -1,0 +1,25 @@
+.todoForm {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.addButton {
+  padding: 8px 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+}
+
+.addButton:hover:not(:disabled) {
+  background-color: #f5f5f5;
+}
+
+.addButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

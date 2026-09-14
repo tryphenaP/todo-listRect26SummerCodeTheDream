@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
+import styles from './LoginPage.module.css';
 
 function LoginPage() {
   const { login, isAuthenticated } = useAuth();
@@ -12,11 +13,8 @@ function LoginPage() {
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Get the page the user originally wanted to visit.
-  // If there is no saved destination, go to /todos.
   const from = location.state?.from || '/todos';
 
-  // Redirect after authentication succeeds.
   useEffect(() => {
     if (isAuthenticated) {
       navigate(from, { replace: true });
@@ -35,9 +33,6 @@ function LoginPage() {
       if (!result.success) {
         setError(result.error || 'Unable to log in');
       }
-      // Do NOT navigate here.
-      // The useEffect above handles navigation
-      // when isAuthenticated becomes true.
     } catch (error) {
       setError('Unable to log in');
     } finally {
@@ -46,49 +41,69 @@ function LoginPage() {
   }
 
   return (
-    <main>
-      <h1>Login</h1>
+    <main className={styles.loginPage}>
+      <div className={styles.loginCard}>
+        <h1 className={styles.title}>Login</h1>
 
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="email">Email</label>
+        <form
+          className={styles.loginForm}
+          onSubmit={handleSubmit}
+        >
+          <label
+            className={styles.label}
+            htmlFor="email"
+          >
+            Email
+          </label>
 
           <input
+            className={styles.input}
             id="email"
             type="email"
             value={email}
-            onChange={(event) => setEmail(event.target.value)}
+            onChange={(event) =>
+              setEmail(event.target.value)
+            }
             required
             disabled={isSubmitting}
           />
-        </div>
 
-        <div>
-          <label htmlFor="password">Password</label>
+          <label
+            className={styles.label}
+            htmlFor="password"
+          >
+            Password
+          </label>
 
           <input
+            className={styles.input}
             id="password"
             type="password"
             value={password}
-            onChange={(event) => setPassword(event.target.value)}
+            onChange={(event) =>
+              setPassword(event.target.value)
+            }
             required
             disabled={isSubmitting}
           />
-        </div>
 
-        {error && (
-          <p style={{ color: 'red' }}>
-            {error}
-          </p>
-        )}
+          {error && (
+            <p className={styles.error}>
+              {error}
+            </p>
+          )}
 
-        <button
-          type="submit"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? 'Logging in...' : 'Login'}
-        </button>
-      </form>
+          <button
+            className={styles.loginButton}
+            type="submit"
+            disabled={isSubmitting}
+          >
+            {isSubmitting
+              ? 'Logging in...'
+              : 'Login'}
+          </button>
+        </form>
+      </div>
     </main>
   );
 }

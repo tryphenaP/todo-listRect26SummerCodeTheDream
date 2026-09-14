@@ -11,6 +11,7 @@ import StatusFilter from '../shared/StatusFilter.jsx';
 import useDebounce from '../utils/useDebounce.js';
 import { useAuth } from '../contexts/AuthContext';
 
+
 import {
   todoReducer,
   initialTodoState,
@@ -18,6 +19,8 @@ import {
 } from '../reducers/todoReducer.js';
 
 import '../App.css';
+import styles from './TodosPage.module.css';
+
 
 function TodosPage() {
   const { token } = useAuth();
@@ -326,65 +329,60 @@ function TodosPage() {
   }
 
   return (
-    <div>
-      <h1>Todo List</h1>
+  <main className={styles.todosPage}>
+    <h1 className={styles.title}>
+      Todo List
+    </h1>
 
-      {isTodoListLoading && (
-        <p>Loading todos...</p>
-      )}
+    {isTodoListLoading && (
+      <p className={styles.loading}>
+        Loading todos...
+      </p>
+    )}
 
-      {error && (
-        <div
-          style={{
-            color: 'red',
-            marginBottom: '10px',
-          }}
+    {error && (
+      <div className={styles.error}>
+        <p className={styles.errorMessage}>
+          {typeof error === 'string'
+            ? error
+            : error?.message}
+        </p>
+
+        <button
+          className={styles.errorButton}
+          onClick={() =>
+            dispatch({
+              type: TODO_ACTIONS.CLEAR_ERROR,
+            })
+          }
         >
-          <p>
-            {typeof error === 'string'
-              ? error
-              : error?.message}
-          </p>
+          Clear Error
+        </button>
+      </div>
+    )}
 
-          <button
-            onClick={() =>
-              dispatch({
-                type:
-                  TODO_ACTIONS.CLEAR_ERROR,
-              })
-            }
-          >
-            Clear Error
-          </button>
-        </div>
-      )}
+    {filterError && (
+      <div className={styles.filterError}>
+        <p className={styles.errorMessage}>
+          {typeof filterError === 'string'
+            ? filterError
+            : filterError?.message}
+        </p>
 
-      {filterError && (
-        <div
-          style={{
-            color: 'orange',
-            marginBottom: '10px',
-          }}
+        <button
+          className={styles.errorButton}
+          onClick={() =>
+            dispatch({
+              type: TODO_ACTIONS.CLEAR_FILTER_ERROR,
+            })
+          }
         >
-          <p>
-            {typeof filterError === 'string'
-              ? filterError
-              : filterError?.message}
-          </p>
+          Clear Filter Error
+        </button>
+      </div>
+    )}
 
-          <button
-            onClick={() =>
-              dispatch({
-                type:
-                  TODO_ACTIONS.CLEAR_FILTER_ERROR,
-              })
-            }
-          >
-            Clear Filter Error
-          </button>
-        </div>
-      )}
-
+    <div className={styles.controls}>
       <SortBy
         sortBy={sortBy}
         sortDirection={sortDirection}
@@ -416,16 +414,17 @@ function TodosPage() {
       />
 
       <TodoForm onAddTodo={addTodo} />
-
-      <TodoList
-        todoList={todoList}
-        statusFilter={statusFilter}
-        dataVersion={dataVersion}
-        onCompleteTodo={completeTodo}
-        onUpdateTodo={updateTodo}
-      />
     </div>
-  );
+
+    <TodoList
+      todoList={todoList}
+      statusFilter={statusFilter}
+      dataVersion={dataVersion}
+      onCompleteTodo={completeTodo}
+      onUpdateTodo={updateTodo}
+    />
+  </main>
+);
 }
 
 export default TodosPage;

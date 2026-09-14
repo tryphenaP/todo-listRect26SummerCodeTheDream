@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import styles from './Logon.module.css';
 
 function Logon() {
   const { login } = useAuth();
@@ -31,37 +32,54 @@ function Logon() {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form
+      className={styles.logonForm}
+      onSubmit={handleSubmit}
+    >
       {authError && (
-        <p style={{ color: 'red' }}>
+        <p className={styles.error}>
           {authError}
         </p>
       )}
 
-      <label>Email</label>
+      <label
+        className={styles.label}
+        htmlFor="email"
+      >
+        Email
+      </label>
+
       <input
+        className={styles.input}
+        id="email"
         type="email"
         value={email}
-        onChange={(e) =>
-          setEmail(e.target.value)
-        }
+        onChange={(e) => setEmail(e.target.value)}
         required
       />
 
-      <label>Password</label>
+      <label
+        className={styles.label}
+        htmlFor="password"
+      >
+        Password
+      </label>
+
       <input
+        className={styles.input}
+        id="password"
         type="password"
         value={password}
-        onChange={(e) =>
-          setPassword(e.target.value)
-        }
+        onChange={(e) => setPassword(e.target.value)}
         required
       />
 
-      <button disabled={isLoggingOn}>
-        {isLoggingOn
-          ? 'Logging on...'
-          : 'Log On'}
+      <button
+        className={styles.logonButton}
+        type="submit"
+        disabled={isLoggingOn}
+      >
+        {isLoggingOn ? 'Logging on...' : 'Log On'}
       </button>
     </form>
   );

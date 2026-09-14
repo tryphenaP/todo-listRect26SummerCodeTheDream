@@ -1,6 +1,7 @@
-import {useEffect} from 'react';
+import { useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router';
+import styles from './HomePage.module.css';
 
 function HomePage() {
   const { isAuthenticated } = useAuth();
@@ -15,11 +16,14 @@ function HomePage() {
   }, [isAuthenticated, navigate]);
 
   return (
-    <div>
-      <p>Redirecting...</p>
-    </div>
+    <main className={styles.homePage}>
+      <div className={styles.redirectCard}>
+        <p className={styles.redirectText}>
+          Redirecting...
+        </p>
+      </div>
+    </main>
   );
 }
 
 export default HomePage;
-    

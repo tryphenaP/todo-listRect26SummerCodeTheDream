@@ -1,0 +1,18 @@
+.todoList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: white;
+}
+
+.emptyMessage {
+  margin: 20px 0;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: white;
+  text-align: center;
+  color: #666;
+}
