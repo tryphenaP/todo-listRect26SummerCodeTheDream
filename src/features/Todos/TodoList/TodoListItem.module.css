@@ -1,90 +1,203 @@
 .todoItem {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px;
-  border-bottom: 1px solid #ddd;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  transition: background-color var(--transition-fast);
+}
+
+.todoItem:last-child {
+  border-bottom: none;
+}
+
+.todoItem:hover {
+  background-color: #fafbfd;
 }
 
 .todoContent {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 1rem;
   flex: 1;
   min-width: 0;
 }
 
+/* Custom Styled Checkbox */
+.checkbox {
+  position: relative;
+  appearance: none;
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  min-height: 22px;
+  margin: 0;
+  cursor: pointer;
+  border: 2px solid #cbd5e1;
+  border-radius: var(--radius-xs);
+  background-color: var(--color-surface);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+
+/* Expand touch hit area for mobile touch target (44px x 44px) */
+.checkbox::before {
+  content: '';
+  position: absolute;
+  top: -11px;
+  left: -11px;
+  right: -11px;
+  bottom: -11px;
+}
+
+.checkbox:hover {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary-light);
+}
+
+.checkbox:checked {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+  background-size: 14px 14px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.checkbox:active {
+  transform: scale(0.92);
+}
+
+.checkbox:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
 .todoTitle {
   flex: 1;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-text);
+  line-height: 1.5;
   overflow-wrap: anywhere;
+  word-break: break-word;
+  transition: color var(--transition-fast), text-decoration var(--transition-fast);
 }
 
 .completed {
   text-decoration: line-through;
-  color: #777;
+  color: var(--color-text-subtle);
 }
 
+/* Edit button in list view */
+.editButton {
+  min-height: var(--min-touch-target);
+  padding: 0 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  background-color: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+
+.editButton:hover {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  background-color: var(--color-primary-light);
+  transform: translateY(-1px);
+}
+
+.editButton:active {
+  transform: translateY(0);
+}
+
+/* Edit Mode Form */
 .editForm {
   display: flex;
   align-items: flex-end;
-  gap: 10px;
+  gap: 0.75rem;
   width: 100%;
 }
 
-.button,
-.editButton {
-  min-height: 44px;
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  background: white;
-  font-size: 14px;
+.editForm > :first-child {
+  flex: 1;
+  min-width: 0;
+}
+
+.button {
+  min-height: var(--min-touch-target);
+  height: var(--min-touch-target);
+  padding: 0 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.button:hover:not(:disabled),
-.editButton:hover:not(:disabled) {
-  background-color: #f5f5f5;
-}
-
-.button:focus-visible,
-.editButton:focus-visible {
-  outline: 2px solid #2563eb;
-  outline-offset: 2px;
-}
-
-.checkbox {
-  width: 20px;
-  height: 20px;
-  margin: 0;
+  white-space: nowrap;
   flex-shrink: 0;
-  cursor: pointer;
-  accent-color: #2563eb;
+  transition: all var(--transition-fast);
 }
 
-.checkbox:focus-visible {
-  outline: 2px solid #2563eb;
-  outline-offset: 2px;
+.editForm button[type="button"] {
+  background-color: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  color: var(--color-text-secondary);
 }
 
-/* Mobile */
-@media (max-width: 600px) {
+.editForm button[type="button"]:hover {
+  background-color: var(--color-surface-hover);
+  border-color: var(--color-border-hover);
+  color: var(--color-text);
+  transform: translateY(-1px);
+}
+
+.editForm button[type="submit"] {
+  background: linear-gradient(135deg, var(--color-primary) 0%, #6366f1 100%);
+  border: 1.5px solid transparent;
+  color: #ffffff;
+  box-shadow: 0 2px 4px rgba(79, 70, 229, 0.25);
+}
+
+.editForm button[type="submit"]:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--color-primary-hover) 0%, #4f46e5 100%);
+  box-shadow: 0 4px 8px rgba(79, 70, 229, 0.35);
+  transform: translateY(-1px);
+}
+
+.editForm button[type="submit"]:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+@media (max-width: 640px) {
   .todoItem {
-    align-items: flex-start;
-    padding: 12px 8px;
+    padding: 0.875rem 1rem;
   }
 
   .todoContent {
-    gap: 8px;
+    gap: 0.75rem;
   }
 
   .editForm {
     flex-wrap: wrap;
   }
 
-  .button,
-  .editButton {
-    min-height: 44px;
+  .editForm > :first-child {
+    width: 100%;
+    flex: 1 1 100%;
+  }
+
+  .editForm button {
+    flex: 1;
   }
 }

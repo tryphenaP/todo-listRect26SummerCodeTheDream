@@ -1,61 +1,170 @@
 .todosPage {
-  max-width: 900px;
-  margin: 40px auto;
-  padding: 0 20px;
+  max-width: 860px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 .title {
   margin-top: 0;
-  margin-bottom: 24px;
+  margin-bottom: 1.75rem;
   text-align: center;
+  font-size: 2.25rem;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  color: var(--color-text);
+  background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 50%, #4f46e5 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .controls {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-bottom: 20px;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background: white;
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+  padding: 1.75rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition-normal);
 }
 
+.controls:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* Loading State */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.5rem;
+  background: var(--color-primary-light);
+  border: 1px solid rgba(79, 70, 229, 0.2);
+  border-radius: var(--radius-md);
+  color: var(--color-primary);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  box-shadow: var(--shadow-xs);
+}
+
+.loading::before {
+  content: '';
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Error States */
 .error {
-  margin-bottom: 16px;
-  padding: 12px;
-  border: 1px solid #d32f2f;
-  border-radius: 6px;
-  color: #d32f2f;
-  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.25rem;
+  background: var(--color-danger-bg);
+  border: 1px solid var(--color-danger-border);
+  border-radius: var(--radius-md);
+  color: var(--color-danger-text);
+  box-shadow: var(--shadow-xs);
+  animation: slideDown 0.2s ease-out;
 }
 
 .filterError {
-  margin-bottom: 16px;
-  padding: 12px;
-  border: 1px solid #e6a700;
-  border-radius: 6px;
-  color: #b36b00;
-  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.25rem;
+  background: var(--color-warning-bg);
+  border: 1px solid var(--color-warning-border);
+  border-radius: var(--radius-md);
+  color: var(--color-warning-text);
+  box-shadow: var(--shadow-xs);
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .errorMessage {
-  margin: 0 0 10px;
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .errorButton {
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  background: white;
+  min-height: var(--min-touch-target);
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  background: var(--color-surface);
+  border: 1px solid currentColor;
+  border-radius: var(--radius-sm);
   cursor: pointer;
+  color: inherit;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
 }
 
 .errorButton:hover {
-  background-color: #f5f5f5;
+  background: rgba(0, 0, 0, 0.05);
+  transform: translateY(-1px);
 }
 
-.loading {
-  margin-bottom: 16px;
-  text-align: center;
+.errorButton:active {
+  transform: translateY(0);
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .title {
+    font-size: 1.75rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .controls {
+    padding: 1.25rem 1rem;
+    gap: 1rem;
+  }
+
+  .error,
+  .filterError {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .errorButton {
+    align-self: flex-start;
+  }
 }

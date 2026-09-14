@@ -1,97 +1,40 @@
-* {
-  box-sizing: border-box;
-}
-
-html,
-body {
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  background: #f4f6f8;
-  color: #222;
-  font-family: Arial, sans-serif;
-  font-size: 16px;
-  line-height: 1.5;
-}
-
-button,
-input,
-select {
-  font: inherit;
-}
-
-button,
-select {
-  min-height: 44px;
-}
-
-button {
-  cursor: pointer;
-}
-
-button:focus-visible,
-input:focus-visible,
-select:focus-visible,
-a:focus-visible {
-  outline: 2px solid #2563eb;
-  outline-offset: 2px;
-}
-
-h1,
-h2,
-h3 {
-  color: #2c3e50;
-}
-
-h1 {
-  font-size: 28px;
-}
-
-h2 {
-  font-size: 22px;
-}
-
-h3 {
-  font-size: 18px;
-}
-
-p {
-  line-height: 1.5;
-}
-
-.app-container {
+.appContainer {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background: #f4f6f8;
+  background: var(--color-bg-gradient);
+  color: var(--color-text);
 }
 
-.app-content {
+.appContent {
   flex: 1;
   width: 100%;
-  max-width: 1100px;
+  max-width: 1024px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 2rem 1.5rem 4rem;
+  animation: fadeIn var(--transition-normal) ease-in-out;
 }
 
-/* Mobile */
-@media (max-width: 600px) {
-  .app-content {
-    padding: 12px;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
   }
-
-  h1 {
-    font-size: 24px;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
+}
 
-  h2 {
-    font-size: 20px;
+/* Tablet & Mobile Breakpoints */
+@media (max-width: 768px) {
+  .appContent {
+    padding: 1.5rem 1.25rem 3rem;
   }
+}
 
-  button,
-  select {
-    min-height: 44px;
+@media (max-width: 640px) {
+  .appContent {
+    padding: 1rem 0.875rem 2.5rem;
   }
 }

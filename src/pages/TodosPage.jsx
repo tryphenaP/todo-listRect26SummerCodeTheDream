@@ -18,7 +18,6 @@ import {
   TODO_ACTIONS,
 } from '../reducers/todoReducer.js';
 
-import '../App.css';
 import styles from './TodosPage.module.css';
 
 
