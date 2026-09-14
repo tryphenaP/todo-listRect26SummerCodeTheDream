@@ -34,7 +34,6 @@
   box-shadow: var(--shadow-md);
 }
 
-/* Loading State */
 .loading {
   display: flex;
   align-items: center;
@@ -71,7 +70,6 @@
   }
 }
 
-/* Error States */
 .error {
   display: flex;
   align-items: center;
@@ -145,7 +143,6 @@
   transform: translateY(0);
 }
 
-/* Responsive adjustments */
 @media (max-width: 640px) {
   .title {
     font-size: 1.75rem;

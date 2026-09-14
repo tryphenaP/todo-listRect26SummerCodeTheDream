@@ -9,7 +9,6 @@ function StatusFilter() {
     const nextParams = new URLSearchParams(searchParams);
 
     if (status === 'all') {
-      // Remove status param for 'all' to keep URL clean
       nextParams.delete('status');
     } else {
       nextParams.set('status', status);

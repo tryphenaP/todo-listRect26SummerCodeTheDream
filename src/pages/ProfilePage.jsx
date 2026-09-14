@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth.js';
 import styles from './ProfilePage.module.css';
 
 function ProfilePage() {
@@ -38,7 +38,7 @@ function ProfilePage() {
         }
 
         if (!response.ok) {
-          throw new Error('Failed to fetch todos');
+          throw new Error('Failed to fetch tasks');
         }
 
         const data = await response.json();
@@ -62,10 +62,8 @@ function ProfilePage() {
           completed,
           active,
         });
-      } catch (err) {
-        setError(
-          `Error loading statistics: ${err.message}`
-        );
+      } catch {
+        setError('Unable to load statistics at this time. Please try again later.');
       } finally {
         setLoading(false);
       }
@@ -109,13 +107,13 @@ function ProfilePage() {
         </h2>
 
         {loading && (
-          <p className={styles.loading}>
+          <p className={styles.loading} role="status">
             Loading statistics...
           </p>
         )}
 
         {error && (
-          <p className={styles.error}>
+          <p className={styles.error} role="alert">
             {error}
           </p>
         )}

@@ -1,5 +1,9 @@
 import TextInputWithLabel from '../../../shared/TextInputWithLabel.jsx';
-import { isValidTodoTitle } from '../../../utils/todoValidation.js';
+import {
+  isValidTodoTitle,
+  sanitizeText,
+  TODO_MAX_LENGTH,
+} from '../../../utils/todoValidation.js';
 import { useEditableTitle } from '../../../hooks/useEditableTitle.js';
 import styles from './TodoListItem.module.css';
 
@@ -22,11 +26,13 @@ function TodoListItem({
 
     event.preventDefault();
 
-    if (!isValidTodoTitle(workingTitle)) return;
+    const sanitizedTitle = sanitizeText(workingTitle);
+
+    if (!isValidTodoTitle(sanitizedTitle)) return;
 
     onUpdateTodo({
       ...todo,
-      title: workingTitle.trim(),
+      title: sanitizedTitle,
     });
 
     finishEdit();
@@ -41,16 +47,19 @@ function TodoListItem({
         >
           <TextInputWithLabel
             elementId={`edit-todo-${todo.id}`}
-            labelText="Edit todo"
+            labelText="Edit task"
             value={workingTitle}
             onChange={(e) => updateTitle(e.target.value)}
-            maxLength={100}
+            maxLength={TODO_MAX_LENGTH}
+            placeholder="Edit task title..."
+            required
           />
 
           <button
             type="button"
             className={styles.button}
             onClick={cancelEdit}
+            aria-label="Cancel editing task"
           >
             Cancel
           </button>
@@ -59,6 +68,7 @@ function TodoListItem({
             type="submit"
             className={styles.button}
             disabled={!isValidTodoTitle(workingTitle)}
+            aria-label="Save changes to task"
           >
             Update
           </button>
@@ -89,6 +99,7 @@ function TodoListItem({
             type="button"
             className={styles.editButton}
             onClick={startEditing}
+            aria-label={`Edit task "${todo.title}"`}
           >
             Edit
           </button>

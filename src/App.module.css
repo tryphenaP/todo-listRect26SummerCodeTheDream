@@ -26,7 +26,6 @@
   }
 }
 
-/* Tablet & Mobile Breakpoints */
 @media (max-width: 768px) {
   .appContent {
     padding: 1.5rem 1.25rem 3rem;

@@ -23,7 +23,6 @@
   min-width: 0;
 }
 
-/* Custom Styled Checkbox */
 .checkbox {
   position: relative;
   appearance: none;
@@ -44,7 +43,6 @@
   transition: all var(--transition-fast);
 }
 
-/* Expand touch hit area for mobile touch target (44px x 44px) */
 .checkbox::before {
   content: '';
   position: absolute;
@@ -93,7 +91,6 @@
   color: var(--color-text-subtle);
 }
 
-/* Edit button in list view */
 .editButton {
   min-height: var(--min-touch-target);
   padding: 0 1rem;
@@ -120,7 +117,6 @@
   transform: translateY(0);
 }
 
-/* Edit Mode Form */
 .editForm {
   display: flex;
   align-items: flex-end;

@@ -1,5 +1,10 @@
 import { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth.js';
+import {
+  isValidEmail,
+  EMAIL_MAX_LENGTH,
+  PASSWORD_MAX_LENGTH,
+} from '../utils/todoValidation.js';
 import styles from './Logon.module.css';
 
 function Logon() {
@@ -12,20 +17,30 @@ function Logon() {
 
   async function handleSubmit(event) {
     event.preventDefault();
-
-    setIsLoggingOn(true);
     setAuthError('');
 
+    const trimmedEmail = email.trim();
+
+    if (!isValidEmail(trimmedEmail)) {
+      setAuthError('Please enter a valid email address.');
+      return;
+    }
+
+    if (!password) {
+      setAuthError('Password is required.');
+      return;
+    }
+
+    setIsLoggingOn(true);
+
     try {
-      const result = await login(email, password);
+      const result = await login(trimmedEmail, password);
 
       if (!result.success) {
-        setAuthError(result.error);
+        setAuthError(result.error || 'Unable to log in. Please check your credentials and try again.');
       }
-    } catch (error) {
-      setAuthError(
-        `Error: ${error.name} | ${error.message}`
-      );
+    } catch {
+      setAuthError('Unable to log in. Please check your connection and try again.');
     } finally {
       setIsLoggingOn(false);
     }
@@ -35,9 +50,10 @@ function Logon() {
     <form
       className={styles.logonForm}
       onSubmit={handleSubmit}
+      noValidate
     >
       {authError && (
-        <p className={styles.error}>
+        <p className={styles.error} role="alert">
           {authError}
         </p>
       )}
@@ -54,8 +70,16 @@ function Logon() {
         id="email"
         type="email"
         value={email}
-        onChange={(e) => setEmail(e.target.value)}
+        onChange={(e) => {
+          setEmail(e.target.value);
+          if (authError) setAuthError('');
+        }}
+        placeholder="name@example.com"
+        maxLength={EMAIL_MAX_LENGTH}
+        autoComplete="email"
         required
+        disabled={isLoggingOn}
+        aria-invalid={Boolean(authError)}
       />
 
       <label
@@ -70,8 +94,16 @@ function Logon() {
         id="password"
         type="password"
         value={password}
-        onChange={(e) => setPassword(e.target.value)}
+        onChange={(e) => {
+          setPassword(e.target.value);
+          if (authError) setAuthError('');
+        }}
+        placeholder="Enter your password"
+        maxLength={PASSWORD_MAX_LENGTH}
+        autoComplete="current-password"
         required
+        disabled={isLoggingOn}
+        aria-invalid={Boolean(authError)}
       />
 
       <button

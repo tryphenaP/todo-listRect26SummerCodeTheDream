@@ -1,30 +1,10 @@
-import {
-  createContext,
-  useContext,
-  useState,
-} from 'react';
-
-// Create the context
-const AuthContext = createContext(null);
-
-// Custom hook with error checking
-export function useAuth() {
-  const context = useContext(AuthContext);
-
-  if (!context) {
-    throw new Error(
-      'useAuth must be used within an AuthProvider'
-    );
-  }
-
-  return context;
-}
+import { useState } from 'react';
+import { AuthContext } from './authContextDef.js';
 
 export function AuthProvider({ children }) {
   const [name, setName] = useState('');
   const [token, setToken] = useState('');
 
-  // LOGIN
   const login = async (userEmail, password) => {
     try {
       const response = await fetch(
@@ -49,7 +29,6 @@ export function AuthProvider({ children }) {
         data.name &&
         data.csrfToken
       ) {
-        // Save the user's name and CSRF token
         setName(data.name);
         setToken(data.csrfToken);
 
@@ -62,19 +41,17 @@ export function AuthProvider({ children }) {
         success: false,
         error:
           data?.message ||
-          'Authentication failed',
+          'Authentication failed. Please check your credentials.',
       };
-    } catch (error) {
+    } catch {
       return {
         success: false,
-        error: 'Network error during login',
+        error: 'Unable to connect to login service. Please try again later.',
       };
     }
   };
 
-  // LOGOUT
   const logout = async () => {
-    // If there is no token, the user is already logged out.
     if (!token) {
       setName('');
       setToken('');
@@ -96,18 +73,13 @@ export function AuthProvider({ children }) {
         }
       );
 
-      // Treat non-2xx responses as logout failures.
       if (!response.ok) {
-        let errorMessage = 'Logout failed';
+        let errorMessage = 'Unable to log out';
 
         try {
           const data = await response.json();
-
-          errorMessage =
-            data?.message ||
-            errorMessage;
+          errorMessage = data?.message || errorMessage;
         } catch {
-          // Response was not JSON.
         }
 
         return {
@@ -119,13 +91,12 @@ export function AuthProvider({ children }) {
       return {
         success: true,
       };
-    } catch (error) {
+    } catch {
       return {
         success: false,
-        error: 'Network error during logout',
+        error: 'Network error occurred during logout.',
       };
     } finally {
-      // Always clear local authentication state.
       setName('');
       setToken('');
     }

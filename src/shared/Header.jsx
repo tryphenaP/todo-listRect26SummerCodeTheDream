@@ -1,4 +1,4 @@
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth.js';
 import Navigation from './Navigation';
 import Logoff from '../features/Logoff';
 import styles from './Header.module.css';
