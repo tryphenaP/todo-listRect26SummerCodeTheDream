@@ -26,7 +26,7 @@ function TodoListItem({
 
     onUpdateTodo({
       ...todo,
-      title: workingTitle,
+      title: workingTitle.trim(),
     });
 
     finishEdit();
@@ -44,6 +44,7 @@ function TodoListItem({
             labelText="Edit todo"
             value={workingTitle}
             onChange={(e) => updateTitle(e.target.value)}
+            maxLength={100}
           />
 
           <button
@@ -57,16 +58,21 @@ function TodoListItem({
           <button
             type="submit"
             className={styles.button}
+            disabled={!isValidTodoTitle(workingTitle)}
           >
             Update
           </button>
         </form>
       ) : (
-        <form className={styles.todoContent}>
+        <div className={styles.todoContent}>
           <input
+            className={styles.checkbox}
             type="checkbox"
             checked={todo.isCompleted}
             onChange={() => onCompleteTodo(todo.id)}
+            aria-label={`Mark "${todo.title}" as ${
+              todo.isCompleted ? 'active' : 'completed'
+            }`}
           />
 
           <span
@@ -86,7 +92,7 @@ function TodoListItem({
           >
             Edit
           </button>
-        </form>
+        </div>
       )}
     </li>
   );
