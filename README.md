@@ -1,6 +1,6 @@
-# TaskFlow — Modern Todo Management Application
+# Todo List Management Application 
 
-A modern, fast, and accessible task management web application built with **React 19**, **React Router**, **Vite**, and scoped **CSS Modules**. TaskFlow offers an intuitive user experience with optimistic UI updates, debounced search filtering, custom styled checkboxes, client-side input sanitization, and responsive design tailored for mobile, tablet, and desktop screens.
+A modern, fast, and accessible task management web application built with **React 19**, **React Router**, **Vite**, and scoped **CSS Modules**. Todo list an intuitive user experience with optimistic UI updates, debounced search filtering, custom styled checkboxes, client-side input sanitization, and responsive design tailored for mobile, tablet, and desktop screens.
 
 ---
 
@@ -43,9 +43,6 @@ A modern, fast, and accessible task management web application built with **Reac
 - **Routing**: [React Router](https://reactrouter.com/)
 - **Build Tool**: [Vite](https://vite.dev/)
 - **Styling**: Scoped CSS Modules (`.module.css`) and Vanilla CSS Custom Properties
-- **Typography**: [Google Fonts](https://fonts.google.com/) — *Plus Jakarta Sans*
-- **Linting & Code Quality**: [Oxlint](https://oxc.rs/)
-- **Data Fetching**: Native Fetch API with CSRF headers
 
 ---
 
@@ -108,22 +105,16 @@ In the project directory, you can run:
 | `npm run dev` | Starts the Vite development server with Hot Module Replacement (HMR) at port `3001`. |
 | `npm run build` | Builds the production-ready bundle into the `dist` directory. |
 | `npm run preview` | Locally serves the production build from `dist` to test before deployment. |
-| `npm run lint` | Runs Oxlint to inspect the codebase for code quality, accessibility, and syntax standards. |
 
 ---
 
 ## Design Decisions
 
-- **Scoped CSS Modules**:
-  Instead of relying on heavy utility frameworks or global stylesheet overrides, each component is paired with an isolated `.module.css` file. This guarantees modularity, prevents naming collisions, and keeps styles co-located with components.
-- **Design Token System**:
-  All foundational styles (colors, elevations, border radii, spacing, transitions, and touch target sizes) are declared as CSS custom properties in `src/index.css`. This enables uniform visual consistency across pages and makes future theme enhancements effortless.
-- **Glassmorphic Navigation**:
-  The sticky application header incorporates subtle backdrop blur (`backdrop-filter: blur(16px)`), giving the application a clean, modern look while keeping key navigation and logout actions always within reach.
-- **Defense-in-Depth Input Security**:
-  All user-entered strings are sanitized before storage using regex tag stripping and whitespace normalization. Strict character limits (`maxLength`) protect against payload overflow and ReDoS vulnerabilities.
-- **Optimistic UI with Fail-Safe Rollback**:
-  Actions like completing or updating a task update the UI instantly to provide a snappy feel, while safely rolling back to the previous state and displaying a gentle notification if the API call fails.
+- **Scoped CSS Modules**: Components use `.module.css` to keep styles isolated and prevent class name conflicts.
+- **CSS Variables**: Global colors, typography, spacing, and border radii are defined in `src/index.css` for visual consistency.
+- **Responsive Layout**: Designed to work smoothly across mobile, tablet, and desktop screens with flexible layouts and touch-friendly controls.
+- **Input Validation & Sanitization**: Form inputs sanitize user text and enforce character limits before submitting.
+- **Optimistic UI Updates**: Task interactions update immediately for a responsive feel, rolling back safely if a request fails.
 
 ---
 
@@ -147,4 +138,3 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 
 - **Developer**: [tryphenaP](https://github.com/tryphenaP)
 - **GitHub Repository**: [https://github.com/tryphenaP/todo-listRect26SummerCodeTheDream](https://github.com/tryphenaP/todo-listRect26SummerCodeTheDream)
-- **Bootcamp**: Developed as part of the [Code the Dream](https://codethedream.org/) curriculum.
