@@ -1,37 +1,50 @@
-import TodoListItem from './TodoListItem.jsx';
 import { useMemo } from 'react';
+import TodoListItem from './TodoListItem.jsx';
+import styles from './TodoList.module.css';
 
-
-
-function TodoList({todoList, onCompleteTodo, onUpdateTodo,dataVersion , statusFilter = 'active'}) {
+function TodoList({
+  todoList,
+  onCompleteTodo,
+  onUpdateTodo,
+  dataVersion,
+  statusFilter = 'active',
+}) {
   const filteredTodoList = useMemo(() => {
-
     let filteredTodos;
+
     switch (statusFilter) {
       case 'completed':
-        filteredTodos = todoList.filter((todo) => todo.isCompleted);
+        filteredTodos = todoList.filter(
+          (todo) => todo.isCompleted || todo.completed || todo.isComplete || todo.status === 'completed'
+        );
         break;
+
       case 'active':
-        filteredTodos = todoList.filter((todo) => !todo.isCompleted);
+        filteredTodos = todoList.filter(
+          (todo) => !(todo.isCompleted || todo.completed || todo.isComplete || todo.status === 'completed')
+        );
         break;
+
       case 'all':
       default:
         filteredTodos = todoList;
         break;
     }
-  return {
+
+    return {
       version: dataVersion,
       todos: filteredTodos,
-     };
-  },  [todoList, dataVersion, statusFilter]);
+    };
+  }, [todoList, dataVersion, statusFilter]);
 
-
- const getEmptyMessage = () => {
+  const getEmptyMessage = () => {
     switch (statusFilter) {
       case 'completed':
         return 'No completed todos yet. Complete some tasks to see them here.';
+
       case 'active':
         return 'No active todos. Add a todo above to get started.';
+
       case 'all':
       default:
         return 'Add todo above to get started.';
@@ -39,9 +52,11 @@ function TodoList({todoList, onCompleteTodo, onUpdateTodo,dataVersion , statusFi
   };
 
   return filteredTodoList.todos.length === 0 ? (
-    <p>{getEmptyMessage()}</p>
+    <p className={styles.emptyMessage}>
+      {getEmptyMessage()}
+    </p>
   ) : (
-    <ul>
+    <ul className={styles.todoList}>
       {filteredTodoList.todos.map((todo) => (
         <TodoListItem
           key={todo.id}

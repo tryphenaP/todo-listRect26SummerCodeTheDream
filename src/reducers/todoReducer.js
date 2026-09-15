@@ -65,9 +65,9 @@ export function todoReducer(state, action) {
         isTodoListLoading: false,
         error: action.payload?.isFilterError
           ? ''
-          : action.payload?.message || 'Failed to fetch todos',
+          : action.payload?.message || 'Failed to fetch tasks',
         filterError: action.payload?.isFilterError
-          ? action.payload?.message || 'Failed to filter todos'
+          ? action.payload?.message || 'Failed to filter tasks'
           : '',
       };
 

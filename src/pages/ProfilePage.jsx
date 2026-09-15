@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth.js';
+import styles from './ProfilePage.module.css';
 
 function ProfilePage() {
   const { name, token } = useAuth();
@@ -24,7 +25,8 @@ function ProfilePage() {
         setLoading(true);
         setError('');
 
-        const response = await fetch('/api/tasks', {
+        const params = new URLSearchParams({ limit: '100' });
+        const response = await fetch(`/api/tasks?${params.toString()}`, {
           method: 'GET',
           headers: {
             'X-CSRF-TOKEN': token,
@@ -37,12 +39,11 @@ function ProfilePage() {
         }
 
         if (!response.ok) {
-          throw new Error('Failed to fetch todos');
+          throw new Error('Failed to fetch tasks');
         }
 
         const data = await response.json();
 
-        // API returns the todos inside data.tasks.
         const todos = Array.isArray(data.tasks)
           ? data.tasks
           : Array.isArray(data)
@@ -52,7 +53,7 @@ function ProfilePage() {
         const total = todos.length;
 
         const completed = todos.filter(
-          (todo) => todo.isCompleted
+          (todo) => todo.isCompleted || todo.completed || todo.isComplete || todo.status === 'completed'
         ).length;
 
         const active = total - completed;
@@ -62,10 +63,8 @@ function ProfilePage() {
           completed,
           active,
         });
-      } catch (err) {
-        setError(
-          `Error loading statistics: ${err.message}`
-        );
+      } catch {
+        setError('Unable to load statistics at this time. Please try again later.');
       } finally {
         setLoading(false);
       }
@@ -82,18 +81,20 @@ function ProfilePage() {
       : 0;
 
   return (
-    <main>
-      <h1>Profile</h1>
+    <main className={styles.profilePage}>
+      <h1 className={styles.title}>Profile</h1>
 
-      <section>
-        <h2>User Information</h2>
+      <section className={styles.section}>
+        <h2 className={styles.heading}>
+          User Information
+        </h2>
 
-        <p>
+        <p className={styles.info}>
           <strong>Name:</strong>{' '}
           {name || 'Unknown'}
         </p>
 
-        <p>
+        <p className={styles.info}>
           <strong>Status:</strong>{' '}
           {token
             ? 'Authenticated'
@@ -101,22 +102,26 @@ function ProfilePage() {
         </p>
       </section>
 
-      <section>
-        <h2>Todo Statistics</h2>
+      <section className={styles.section}>
+        <h2 className={styles.heading}>
+          Todo Statistics
+        </h2>
 
         {loading && (
-          <p>Loading statistics...</p>
+          <p className={styles.loading} role="status">
+            Loading statistics...
+          </p>
         )}
 
         {error && (
-          <p style={{ color: 'red' }}>
+          <p className={styles.error} role="alert">
             {error}
           </p>
         )}
 
         {!loading && !error && (
           <>
-            <ul>
+            <ul className={styles.statsList}>
               <li>
                 Total Todos: {todoStats.total}
               </li>
@@ -131,7 +136,7 @@ function ProfilePage() {
               </li>
             </ul>
 
-            <p>
+            <p className={styles.completionRate}>
               <strong>Completion Rate:</strong>{' '}
               {completionRate}%
             </p>

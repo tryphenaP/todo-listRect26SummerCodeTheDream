@@ -29,6 +29,8 @@ export function useEditableTitle(initialTitle) {
     startEditing,
     cancelEdit,
     updateTitle,
-    finishEdit
+    finishEdit,
   };
 }
+
+export default useEditableTitle;

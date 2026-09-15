@@ -1,45 +1,79 @@
 import { Link } from 'react-router';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth.js';
+import styles from './NotFoundPage.module.css';
 
 function NotFoundPage() {
   const { isAuthenticated } = useAuth();
 
   return (
-    <div style={{ padding: '20px', textAlign: 'center' }}>
-      <h1>404 - Page Not Found</h1>
+    <main className={styles.notFoundPage}>
+      <div className={styles.notFoundCard}>
+        <h1 className={styles.title}>
+          404 - Page Not Found
+        </h1>
 
-      <p>Oops! The page you are looking for does not exist.</p>
+        <p className={styles.message}>
+          Oops! The page you are looking for does not exist.
+        </p>
 
-      <p>You can navigate back to:</p>
+        <p className={styles.message}>
+          You can navigate back to:
+        </p>
 
-      <div style={{ marginTop: '20px' }}>
-        <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center' }}>
-          <li>
-            <Link to="/">Home</Link>
-          </li>
-
-          <li>
-            <Link to="/about">About</Link>
-          </li>
-
-          {isAuthenticated ? (
-            <>
-              <li>
-                <Link to="/todos">Todo List</Link>
-              </li>
-
-              <li>
-                <Link to="/profile">Profile</Link>
-              </li>
-            </>
-          ) : (
+        <nav className={styles.navigation}>
+          <ul className={styles.linkList}>
             <li>
-              <Link to="/login">Login</Link>
+              <Link
+                className={styles.link}
+                to="/"
+              >
+                Home
+              </Link>
             </li>
-          )}
-        </ul>
+
+            <li>
+              <Link
+                className={styles.link}
+                to="/about"
+              >
+                About
+              </Link>
+            </li>
+
+            {isAuthenticated ? (
+              <>
+                <li>
+                  <Link
+                    className={styles.link}
+                    to="/todos"
+                  >
+                    Todo List
+                  </Link>
+                </li>
+
+                <li>
+                  <Link
+                    className={styles.link}
+                    to="/profile"
+                  >
+                    Profile
+                  </Link>
+                </li>
+              </>
+            ) : (
+              <li>
+                <Link
+                  className={styles.link}
+                  to="/login"
+                >
+                  Login
+                </Link>
+              </li>
+            )}
+          </ul>
+        </nav>
       </div>
-    </div>
+    </main>
   );
 }
 
