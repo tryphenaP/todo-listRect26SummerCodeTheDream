@@ -154,12 +154,13 @@ function TodosPage() {
       }
 
       const data = await response.json();
+      const createdTask = data.task || data.todo || data;
 
       dispatch({
         type: TODO_ACTIONS.ADD_TODO_SUCCESS,
         payload: {
           tempId: newTodo.id,
-          task: data.task,
+          task: createdTask,
         },
       });
 
@@ -264,10 +265,11 @@ function TodosPage() {
       }
 
       const data = await response.json();
+      const updatedTask = data.task || data.todo || data;
 
       dispatch({
         type: TODO_ACTIONS.UPDATE_TODO_SUCCESS,
-        payload: data.task,
+        payload: updatedTask,
       });
 
       invalidateCache();
