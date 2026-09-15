@@ -25,7 +25,8 @@ function ProfilePage() {
         setLoading(true);
         setError('');
 
-        const response = await fetch('/api/tasks', {
+        const params = new URLSearchParams({ limit: '100' });
+        const response = await fetch(`/api/tasks?${params.toString()}`, {
           method: 'GET',
           headers: {
             'X-CSRF-TOKEN': token,
@@ -52,7 +53,7 @@ function ProfilePage() {
         const total = todos.length;
 
         const completed = todos.filter(
-          (todo) => todo.isCompleted
+          (todo) => todo.isCompleted || todo.completed || todo.isComplete || todo.status === 'completed'
         ).length;
 
         const active = total - completed;

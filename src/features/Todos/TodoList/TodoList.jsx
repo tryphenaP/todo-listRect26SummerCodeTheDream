@@ -15,13 +15,13 @@ function TodoList({
     switch (statusFilter) {
       case 'completed':
         filteredTodos = todoList.filter(
-          (todo) => todo.isCompleted
+          (todo) => todo.isCompleted || todo.completed || todo.isComplete || todo.status === 'completed'
         );
         break;
 
       case 'active':
         filteredTodos = todoList.filter(
-          (todo) => !todo.isCompleted
+          (todo) => !(todo.isCompleted || todo.completed || todo.isComplete || todo.status === 'completed')
         );
         break;
 

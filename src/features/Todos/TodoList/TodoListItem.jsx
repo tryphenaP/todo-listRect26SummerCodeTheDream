@@ -38,6 +38,8 @@ function TodoListItem({
     finishEdit();
   };
 
+  const isTaskComplete = todo.isCompleted || todo.completed || todo.isComplete || todo.status === 'completed';
+
   return (
     <li className={styles.todoItem}>
       {isEditing ? (
@@ -78,16 +80,16 @@ function TodoListItem({
           <input
             className={styles.checkbox}
             type="checkbox"
-            checked={todo.isCompleted}
+            checked={isTaskComplete}
             onChange={() => onCompleteTodo(todo.id)}
             aria-label={`Mark "${todo.title}" as ${
-              todo.isCompleted ? 'active' : 'completed'
+              isTaskComplete ? 'active' : 'completed'
             }`}
           />
 
           <span
             className={
-              todo.isCompleted
+              isTaskComplete
                 ? `${styles.todoTitle} ${styles.completed}`
                 : styles.todoTitle
             }

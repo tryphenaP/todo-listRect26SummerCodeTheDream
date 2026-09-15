@@ -146,6 +146,7 @@ function TodosPage() {
         body: JSON.stringify({
           title: todoTitle,
           isCompleted: false,
+          completed: false,
         }),
       });
 
@@ -204,6 +205,7 @@ function TodosPage() {
           credentials: 'include',
           body: JSON.stringify({
             isCompleted: true,
+            completed: true,
           }),
         }
       );
@@ -256,6 +258,7 @@ function TodosPage() {
           body: JSON.stringify({
             title: editedTodo.title,
             isCompleted: editedTodo.isCompleted,
+            completed: editedTodo.isCompleted || editedTodo.completed,
           }),
         }
       );
