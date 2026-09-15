@@ -1,22 +1,32 @@
-
-import TodoList from '/src/features/Todos/TodoList/TodoList.jsx';
-import TodoForm from '/src/features/Todos/TodoForm.jsx';
-import SortBy from '/src/shared/SortBy.jsx';
-import FilterInput from '/src/shared/FilterInput.jsx';
-import useDebounce from '/src/utils/useDebounce.js';
-import '/src/App.css';
-import { useAuth } from '/src/contexts/AuthContext';
-
 import { useEffect, useReducer, useCallback } from 'react';
+import { useSearchParams } from 'react-router';
+
+import TodoList from '../features/Todos/TodoList/TodoList.jsx';
+import TodoForm from '../features/Todos/TodoForm.jsx';
+
+import SortBy from '../shared/SortBy.jsx';
+import FilterInput from '../shared/FilterInput.jsx';
+import StatusFilter from '../shared/StatusFilter.jsx';
+
+import useDebounce from '../utils/useDebounce.js';
+import { useAuth } from '../contexts/AuthContext';
 
 import {
   todoReducer,
   initialTodoState,
   TODO_ACTIONS,
-} from '/src/reducers/todoReducer.js';
+} from '../reducers/todoReducer.js';
+
+import '../App.css';
 
 function TodosPage() {
   const { token } = useAuth();
+
+  // Status filter is stored in the URL.
+  const [searchParams] = useSearchParams();
+
+  const statusFilter =
+    searchParams.get('status') || 'all';
 
   const [state, dispatch] = useReducer(
     todoReducer,
@@ -34,17 +44,12 @@ function TodosPage() {
     dataVersion,
   } = state;
 
-  const debouncedFilterTerm = useDebounce(
-    filterTerm,
-    300
-  );
+  const debouncedFilterTerm =
+    useDebounce(filterTerm, 300);
 
   /*
-   * Increment dataVersion after a successful
-   * todo mutation.
-   *
-   * dataVersion is included in the fetch effect,
-   * so this causes the todo list to refresh.
+   * Changing dataVersion causes the fetch effect
+   * to run again and get the latest data.
    */
   const invalidateCache = useCallback(() => {
     dispatch({
@@ -52,26 +57,23 @@ function TodosPage() {
     });
   }, []);
 
-  /*
-   * Handle filter changes.
-   *
-   * Clear any previous filter error when the
-   * user changes the filter.
-   */
   const handleFilterChange = (newTerm) => {
     dispatch({
       type: TODO_ACTIONS.SET_FILTER,
       payload: newTerm,
     });
-
-    dispatch({
-      type: TODO_ACTIONS.CLEAR_FILTER_ERROR,
-    });
   };
 
-  
+  /*
+   * Fetch todos whenever authentication,
+   * sorting, searching, or dataVersion changes.
+   */
   useEffect(() => {
     async function fetchTodos() {
+      if (!token) {
+        return;
+      }
+
       dispatch({
         type: TODO_ACTIONS.FETCH_START,
       });
@@ -127,9 +129,7 @@ function TodosPage() {
       }
     }
 
-    if (token) {
-      fetchTodos();
-    }
+    fetchTodos();
   }, [
     token,
     sortBy,
@@ -139,7 +139,7 @@ function TodosPage() {
   ]);
 
   /*
-   * Add Todo
+   * ADD TODO
    */
   async function addTodo(todoTitle) {
     const newTodo = {
@@ -148,24 +148,28 @@ function TodosPage() {
       isCompleted: false,
     };
 
+    // Optimistically add the todo.
     dispatch({
       type: TODO_ACTIONS.ADD_TODO_START,
       payload: newTodo,
     });
 
     try {
-      const response = await fetch('/api/tasks', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-TOKEN': token,
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          title: todoTitle,
-          isCompleted: false,
-        }),
-      });
+      const response = await fetch(
+        '/api/tasks',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': token,
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            title: todoTitle,
+            isCompleted: false,
+          }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error(
@@ -183,6 +187,7 @@ function TodosPage() {
         },
       });
 
+      // Refresh data after successful mutation.
       invalidateCache();
     } catch (error) {
       dispatch({
@@ -196,7 +201,7 @@ function TodosPage() {
   }
 
   /*
-   * Complete Todo
+   * COMPLETE TODO
    */
   async function completeTodo(todoId) {
     const originalTodo = todoList.find(
@@ -207,9 +212,12 @@ function TodosPage() {
       return;
     }
 
+    // Optimistically mark as completed.
     dispatch({
       type: TODO_ACTIONS.COMPLETE_TODO_START,
-      payload: originalTodo,
+      payload: {
+        id: todoId,
+      },
     });
 
     try {
@@ -239,8 +247,10 @@ function TodosPage() {
         payload: todoId,
       });
 
+      // Refresh after successful update.
       invalidateCache();
     } catch (error) {
+      // Restore original todo if request fails.
       dispatch({
         type: TODO_ACTIONS.COMPLETE_TODO_ERROR,
         payload: {
@@ -252,7 +262,7 @@ function TodosPage() {
   }
 
   /*
-   * Update Todo
+   * UPDATE TODO
    */
   async function updateTodo(editedTodo) {
     const originalTodo = todoList.find(
@@ -264,6 +274,7 @@ function TodosPage() {
       return;
     }
 
+    // Optimistically update the todo.
     dispatch({
       type: TODO_ACTIONS.UPDATE_TODO_START,
       payload: editedTodo,
@@ -300,8 +311,10 @@ function TodosPage() {
         payload: data.task,
       });
 
+      // Refresh after successful update.
       invalidateCache();
     } catch (error) {
+      // Restore original todo if request fails.
       dispatch({
         type: TODO_ACTIONS.UPDATE_TODO_ERROR,
         payload: {
@@ -336,7 +349,8 @@ function TodosPage() {
           <button
             onClick={() =>
               dispatch({
-                type: TODO_ACTIONS.CLEAR_ERROR,
+                type:
+                  TODO_ACTIONS.CLEAR_ERROR,
               })
             }
           >
@@ -394,6 +408,8 @@ function TodosPage() {
         }
       />
 
+      <StatusFilter />
+
       <FilterInput
         filterTerm={filterTerm}
         onFilterChange={handleFilterChange}
@@ -403,6 +419,7 @@ function TodosPage() {
 
       <TodoList
         todoList={todoList}
+        statusFilter={statusFilter}
         dataVersion={dataVersion}
         onCompleteTodo={completeTodo}
         onUpdateTodo={updateTodo}

@@ -21,27 +21,25 @@ export function useAuth() {
 }
 
 export function AuthProvider({ children }) {
-  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
   const [token, setToken] = useState('');
 
   // LOGIN
   const login = async (userEmail, password) => {
     try {
-      const options = {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          email: userEmail,
-          password,
-        }),
-      };
-
       const response = await fetch(
         '/api/users/logon',
-        options
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            email: userEmail,
+            password,
+          }),
+        }
       );
 
       const data = await response.json();
@@ -51,7 +49,8 @@ export function AuthProvider({ children }) {
         data.name &&
         data.csrfToken
       ) {
-        setEmail(data.name);
+        // Save the user's name and CSRF token
+        setName(data.name);
         setToken(data.csrfToken);
 
         return {
@@ -75,12 +74,9 @@ export function AuthProvider({ children }) {
 
   // LOGOUT
   const logout = async () => {
-    /*
-     * If there is no token, the user is already
-     * logged out. Clear local state and report success.
-     */
+    // If there is no token, the user is already logged out.
     if (!token) {
-      setEmail('');
+      setName('');
       setToken('');
 
       return {
@@ -100,12 +96,9 @@ export function AuthProvider({ children }) {
         }
       );
 
-      /*
-       * Treat non-2xx responses as logout failures.
-       */
+      // Treat non-2xx responses as logout failures.
       if (!response.ok) {
-        let errorMessage =
-          'Logout failed';
+        let errorMessage = 'Logout failed';
 
         try {
           const data = await response.json();
@@ -127,27 +120,22 @@ export function AuthProvider({ children }) {
         success: true,
       };
     } catch (error) {
-      /*
-       * Network or fetch failure.
-       */
       return {
         success: false,
         error: 'Network error during logout',
       };
     } finally {
-      /*
-       * Always clear local authentication state,
-       * even if the API logout request fails.
-       */
-      setEmail('');
+      // Always clear local authentication state.
+      setName('');
       setToken('');
     }
   };
 
   const value = {
-    email,
+    name,
     token,
     isAuthenticated: Boolean(token),
+    loading: false,
     login,
     logout,
   };
@@ -158,4 +146,3 @@ export function AuthProvider({ children }) {
     </AuthContext.Provider>
   );
 }
-
