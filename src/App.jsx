@@ -24,16 +24,15 @@ function completeTodo(todoId) {
   }));
 } 
 function updateTodo(editedTodo) {
-const updatedTodos = todoList.map(todo => {
+  setTodoList(previous => previous.map(todo => {
     if (todo.id === editedTodo.id) {
       return {
         ...editedTodo,
       };
     }
     return todo;
-  });
-  setTodoList(updatedTodos);
-} 
+  }));
+}
   return (
     <div>
       <h1>Todo List</h1>
