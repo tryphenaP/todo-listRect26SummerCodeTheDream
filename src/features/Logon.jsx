@@ -59,7 +59,7 @@ function Logon({
       onChange={(e) => setPassword(e.target.value)}
       required />
 
-      <button disabled={isLoggingOn}> {isLoggingOn ? 'Logging on...' : 'Log On'}  </button>
+      <button disabled={isLoggingOn}> {isLoggingOn ? 'Logging in...' : 'Log On'}  </button>
     </form>
   );
 }

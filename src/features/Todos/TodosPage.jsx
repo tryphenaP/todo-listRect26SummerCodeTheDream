@@ -75,7 +75,7 @@ function TodosPage({ token }) {
     // Replace temporary todo with real todo from server
     setTodoList((previous) =>
       previous.map((todo) =>
-        todo.id === newTodo.id ? data.task : todo
+        todo.id === newTodo.id ? data : todo
       )
     );
 
@@ -171,7 +171,7 @@ if (!originalTodo) return;
       credentials: 'include',
       body: JSON.stringify({
         title: editedTodo.title,
-        
+        isCompleted: originalTodo.isCompleted,
       }),
     });
 
