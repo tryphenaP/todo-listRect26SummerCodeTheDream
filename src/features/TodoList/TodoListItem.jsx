@@ -14,7 +14,6 @@ const handleUpdate = (event) => {
   const finalTitle = finishEdit();
   if (!isValidTodoTitle(finalTitle)) return;
   onUpdateTodo({ ...todo, title: finalTitle });
-  cancelEdit();
 };
 
 
@@ -22,14 +21,19 @@ const handleUpdate = (event) => {
      <li>
     <form onSubmit={handleUpdate}>
         {isEditing ? (
-            <TextInputWithLabel value={workingTitle} 
-            onChange={e => updateTitle(e.target.value)}
-            elementId={`todoTitle${todo.id}`}
-              labelText="Todo Title" 
-            
-            />
-            
-            
+            <>
+                <TextInputWithLabel value={workingTitle} 
+                onChange={e => updateTitle(e.target.value)}
+                elementId={`todoTitle${todo.id}`}
+                labelText="Todo" 
+                />
+                <button type="button" onClick={cancelEdit}>
+                Cancel
+                </button>
+                <button type="submit" disabled={!isValidTodoTitle(workingTitle)}>
+                Update
+                </button>
+            </>
         ) : (
             <>
                 <label>
@@ -38,18 +42,11 @@ const handleUpdate = (event) => {
                         id={`checkbox${todo.id}`}
                         checked={todo.isCompleted}
                         onChange={() => onCompleteTodo(todo.id)}
-                         
-                         
                     />
                 </label>
                 <span onClick={() => startEditing()}>{todo.title}</span>
             </>
-        )}<button type="button" onClick={cancelEdit}>
-          Cancel
-        </button>
-        <button type="submit" disabled={!isValidTodoTitle(workingTitle)}>
-          Update
-        </button>
+        )}
     </form>
 </li>
   );
