@@ -16,7 +16,7 @@ import {
 } from '/src/reducers/todoReducer.js';
 
 function TodosPage() {
-  const { token, isAuthenticated } = useAuth();
+  const { token } = useAuth();
 
   const [state, dispatch] = useReducer(
     todoReducer,
@@ -61,7 +61,7 @@ function TodosPage() {
   const handleFilterChange = (newTerm) => {
     dispatch({
       type: TODO_ACTIONS.SET_FILTER,
-      payload: newTerm,
+      payload: { filterTerm: newTerm },
     });
 
     dispatch({
@@ -119,9 +119,7 @@ function TodosPage() {
         dispatch({
           type: TODO_ACTIONS.FETCH_ERROR,
           payload: {
-            message: `Error fetching todos: ${error.message}`,
-            isFilterError:
-              Boolean(debouncedFilterTerm.trim()),
+            message: `Error fetching todos: ${error.message}`
           },
         });
       }
@@ -183,7 +181,7 @@ function TodosPage() {
         },
       });
 
-      invalidateCache();
+
     } catch (error) {
       dispatch({
         type: TODO_ACTIONS.ADD_TODO_ERROR,
@@ -239,7 +237,7 @@ function TodosPage() {
         payload: todoId,
       });
 
-      invalidateCache();
+
     } catch (error) {
       dispatch({
         type: TODO_ACTIONS.COMPLETE_TODO_ERROR,
@@ -300,7 +298,7 @@ function TodosPage() {
         payload: data.task,
       });
 
-      invalidateCache();
+
     } catch (error) {
       dispatch({
         type: TODO_ACTIONS.UPDATE_TODO_ERROR,
@@ -311,8 +309,6 @@ function TodosPage() {
       });
     }
   }
-
-  if (!isAuthenticated) return null;
 
   return (
     <div>
@@ -400,6 +396,9 @@ function TodosPage() {
         filterTerm={filterTerm}
         onFilterChange={handleFilterChange}
       />
+      <button onClick={() => dispatch({ type: TODO_ACTIONS.RESET_FILTERS })}>
+        Reset Filters and Sort
+      </button>
 
       <TodoForm onAddTodo={addTodo} />
 

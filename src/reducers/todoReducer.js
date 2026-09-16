@@ -63,12 +63,7 @@ export function todoReducer(state, action) {
       return {
         ...state,
         isTodoListLoading: false,
-        error: action.payload?.isFilterError
-          ? ''
-          : action.payload?.message || 'Failed to fetch todos',
-        filterError: action.payload?.isFilterError
-          ? action.payload?.message || 'Failed to filter todos'
-          : '',
+        error: action.payload?.message || 'Failed to fetch todos',
       };
 
     case TODO_ACTIONS.CLEAR_ERROR:
@@ -86,7 +81,7 @@ export function todoReducer(state, action) {
     case TODO_ACTIONS.SET_FILTER:
       return {
         ...state,
-        filterTerm: action.payload,
+        filterTerm: action.payload.filterTerm,
         filterError: '',
       };
 
