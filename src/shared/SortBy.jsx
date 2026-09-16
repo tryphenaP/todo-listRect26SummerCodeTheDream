@@ -13,7 +13,7 @@ function SortBy({
           value={sortBy}
           onChange={(e) => onSortByChange(e.target.value)}
         >
-          <option value="createdAt">Creation Date</option>
+          <option value="createdAt">Created At</option>
           <option value="title">Title</option>
         </select>
       </div>

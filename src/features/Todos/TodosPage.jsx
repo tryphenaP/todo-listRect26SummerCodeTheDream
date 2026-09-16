@@ -10,7 +10,6 @@ import {  useEffect, useState , useCallback } from "react";
 function TodosPage({ token }) {
   const [todoList, setTodoList] = useState([]);
   const [error, setError] = useState('');
-  const [fetchError, setFetchError] = useState('');
   const [isTodoListLoading, setIsTodoListLoading] = useState(false);
 
   const [sortBy, setSortBy] = useState('createdAt');
@@ -23,7 +22,6 @@ function TodosPage({ token }) {
   const [filterError, setFilterError] = useState('');
 
   const invalidateCache = useCallback(() => {
-    console.log('Invalidating memo cache after todo mutation');
     setDataVersion((prev) => prev + 1);
   }, []);
 
@@ -68,7 +66,6 @@ function TodosPage({ token }) {
       setTodoList(data.tasks);
       setFilterError('');
       setError('');
-      setFetchError('');
 
     } catch (error) {
       if (
@@ -132,7 +129,7 @@ function TodosPage({ token }) {
     );
 invalidateCache();
     
-    setFetchError(error.message);
+    setError(error.message);
   }   
   
    }
@@ -181,7 +178,7 @@ setTodoList((previous) =>
     );
 invalidateCache();
     // Set error message
-    setFetchError(error.message);
+    setError(error.message);
   }
   
 } 
@@ -238,7 +235,7 @@ const updatedTodos = todoList.map(todo => {
     invalidateCache();
 
     // 5. Set error message
-    setFetchError(error.message);
+    setError(error.message);
   }
 } 
 
@@ -249,15 +246,6 @@ const updatedTodos = todoList.map(todo => {
       <h1>Todo List</h1>
       {isTodoListLoading && (
       <p>Loading todos...</p>
-    )}
-      {fetchError && (
-      <div style={{ color: "red", marginBottom: "10px" }}>
-        <p>{fetchError}</p>
-
-        <button onClick={() => setFetchError('')}>
-          Clear Error
-        </button>
-      </div>
     )}
 
      {error && (
