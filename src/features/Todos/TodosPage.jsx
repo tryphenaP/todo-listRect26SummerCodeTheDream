@@ -22,6 +22,7 @@ function TodosPage({ token }) {
   const [filterError, setFilterError] = useState('');
 
   const invalidateCache = useCallback(() => {
+    console.log('Invalidating memo cache after todo mutation');
     setDataVersion((prev) => prev + 1);
   }, []);
 
@@ -69,10 +70,10 @@ function TodosPage({ token }) {
 
     } catch (error) {
       if (
-    debouncedFilterTerm ||
-    sortBy !== 'createdAt' ||
-    sortDirection !== 'desc'
-  ) {
+        debouncedFilterTerm !== '' ||
+        sortBy !== 'createdAt' ||
+        sortDirection !== 'desc'
+      ) {
     setFilterError(
       `Error filtering/sorting todos: ${error.message}`
     );
@@ -94,7 +95,6 @@ function TodosPage({ token }) {
       isCompleted: false
     };
     setTodoList((previous) => [...previous, newTodo]);
-  invalidateCache();
 
     try {
     const response = await fetch('/api/tasks', {
@@ -127,7 +127,6 @@ function TodosPage({ token }) {
     setTodoList((previous) =>
       previous.filter((todo) => todo.id !== newTodo.id)
     );
-invalidateCache();
     
     setError(error.message);
   }   
@@ -145,7 +144,6 @@ invalidateCache();
     }
     return todo;
   }));
-  invalidateCache();
 
 try {
     const response = await fetch(`/api/tasks/${todoId}`, {
@@ -164,6 +162,7 @@ try {
     if (!response.ok) {
       throw new Error('Failed to complete todo');
     }
+    invalidateCache();
 
   } catch (error) {
 
@@ -176,7 +175,6 @@ setTodoList((previous) =>
         return todo;
       })
     );
-invalidateCache();
     // Set error message
     setError(error.message);
   }
@@ -200,7 +198,6 @@ const updatedTodos = todoList.map(todo => {
     return todo;
   });
   setTodoList(updatedTodos);
-  invalidateCache();
 
   try {
     // 3. PATCH request to API
@@ -221,6 +218,7 @@ const updatedTodos = todoList.map(todo => {
     if (!response.ok) {
       throw new Error('Failed to update todo');
     }
+    invalidateCache();
 } catch (error) {
 
     // 4. Rollback to original todo on failure
@@ -232,7 +230,6 @@ const updatedTodos = todoList.map(todo => {
     });
 
     setTodoList(rolledBack);
-    invalidateCache();
 
     // 5. Set error message
     setError(error.message);
