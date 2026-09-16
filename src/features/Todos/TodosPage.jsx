@@ -23,6 +23,7 @@ function TodosPage({ token }) {
   const [filterError, setFilterError] = useState('');
 
   const invalidateCache = useCallback(() => {
+    console.log('Invalidating memo cache after todo mutation');
     setDataVersion((prev) => prev + 1);
   }, []);
 
@@ -79,7 +80,7 @@ function TodosPage({ token }) {
       `Error filtering/sorting todos: ${error.message}`
     );
   } else {
-    setFetchError(`Error fetching todos: ${error.message}`);
+    setError(`Error fetching todos: ${error.message}`);
   }
     } finally {
       setIsTodoListLoading(false);
