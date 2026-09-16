@@ -9,7 +9,6 @@ import {  useEffect, useState , useCallback } from "react";
 
 function TodosPage({ token }) {
   const [todoList, setTodoList] = useState([]);
-  const [error, setError] = useState('');
   const [fetchError, setFetchError] = useState('');
   const [isTodoListLoading, setIsTodoListLoading] = useState(false);
 
@@ -23,8 +22,8 @@ function TodosPage({ token }) {
   const [filterError, setFilterError] = useState('');
 
   const invalidateCache = useCallback(() => {
-
-  setDataVersion((prev) => prev + 1);
+    console.log('Invalidating memo cache after todo mutation');
+    setDataVersion((prev) => prev + 1);
   }, []);
 
   const handleFilterChange = (newTerm) => {
@@ -66,7 +65,7 @@ function TodosPage({ token }) {
 
       setTodoList(data.tasks);
       setFilterError('');
-      setError('');
+      setFetchError('');
 
     } catch (error) {
       if (
@@ -78,7 +77,7 @@ function TodosPage({ token }) {
       `Error filtering/sorting todos: ${error.message}`
     );
   } else {
-    setError(`Error fetching todos: ${error.message}`);
+    setFetchError(`Error fetching todos: ${error.message}`);
   }
     } finally {
       setIsTodoListLoading(false);
@@ -257,15 +256,7 @@ const updatedTodos = todoList.map(todo => {
         </button>
       </div>
     )}
-     {error && (
-  <div style={{ color: 'red', marginBottom: '10px' }}>
-    <p>{error}</p>
 
-    <button onClick={() => setError('')}>
-      Clear Error
-    </button>
-  </div>
-)}
 
     {filterError && (
   <div style={{ color: 'orange', marginBottom: '10px' }}>

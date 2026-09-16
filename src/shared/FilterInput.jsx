@@ -1,4 +1,4 @@
-function TodoFilter({ filterTerm, onFilterChange }) {
+function FilterInput({ filterTerm, onFilterChange }) {
   return (
     <div>
       <label htmlFor="filterInput">Search todos:</label>
@@ -13,4 +13,4 @@ function TodoFilter({ filterTerm, onFilterChange }) {
   );
 }
 
-export default TodoFilter;
+export default FilterInput;
