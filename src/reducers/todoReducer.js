@@ -114,6 +114,7 @@ export function todoReducer(state, action) {
     case TODO_ACTIONS.ADD_TODO_START:
       return {
         ...state,
+        error: '',
         todoList: [
           ...state.todoList.filter(Boolean),
           {
@@ -151,6 +152,7 @@ export function todoReducer(state, action) {
     case TODO_ACTIONS.COMPLETE_TODO_START:
       return {
         ...state,
+        error: '',
         todoList: state.todoList
           .filter(Boolean)
           .map((todo) =>
@@ -164,7 +166,10 @@ export function todoReducer(state, action) {
       };
 
     case TODO_ACTIONS.COMPLETE_TODO_SUCCESS:
-      return state;
+      return {
+        ...state,
+        error: '',
+      };
 
     case TODO_ACTIONS.COMPLETE_TODO_ERROR:
       return {
@@ -182,6 +187,7 @@ export function todoReducer(state, action) {
     case TODO_ACTIONS.UPDATE_TODO_START:
       return {
         ...state,
+        error: '',
         todoList: state.todoList
           .filter(Boolean)
           .map((todo) =>

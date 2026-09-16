@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 
 function Logon() {
-  const { login } = useAuth();
+  const { login, isAuthenticated } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -29,6 +29,8 @@ function Logon() {
       setIsLoggingOn(false);
     }
   }
+
+  if (isAuthenticated) return null;
 
   return (
     <form onSubmit={handleSubmit}>

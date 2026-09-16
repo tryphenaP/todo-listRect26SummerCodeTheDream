@@ -16,7 +16,7 @@ import {
 } from '/src/reducers/todoReducer.js';
 
 function TodosPage() {
-  const { token } = useAuth();
+  const { token, isAuthenticated } = useAuth();
 
   const [state, dispatch] = useReducer(
     todoReducer,
@@ -311,6 +311,8 @@ function TodosPage() {
       });
     }
   }
+
+  if (!isAuthenticated) return null;
 
   return (
     <div>
